@@ -46,9 +46,9 @@ public class Event implements EventModel, Comparable<EventModel> {
     if (endTime == null || endTime.isBefore(startTime)) {
       throw new IllegalArgumentException("Event end time cannot be null or before the start time.");
     }
-    if (hostId == null || hostId.trim().isEmpty()) {
-      throw new IllegalArgumentException("Event host ID cannot be null or empty.");
-    }
+//    if (hostId == null || hostId.trim().isEmpty()) {
+//      throw new IllegalArgumentException("Event host ID cannot be null or empty.");
+//    }
     this.name = name;
     this.location = location;
     this.isOnline = isOnline;
@@ -60,7 +60,7 @@ public class Event implements EventModel, Comparable<EventModel> {
   }
 
   /**
-   * Checks whether an event overalps.
+   * Checks whether an event overlaps.
    * @param event the event to check for overlap
    * @return true or false based on whether or not the event overlaps.
    */
@@ -112,7 +112,6 @@ public class Event implements EventModel, Comparable<EventModel> {
    * Gets the name of the event.
    * @return the name of the event.
    */
-
   @Override
   public String getName() {
     return name;

@@ -100,16 +100,16 @@ public class Schedule implements ScheduleModel {
 
   /**
    * Checks if a specific time slot in the schedule is free.
-   * @param startTime The start time of the slot to check.
-   * @param endTime The end time of the slot to check.
+   * @param start The start time of the slot to check.
+   * @param end The end time of the slot to check.
    * @return true if the time slot is free, false otherwise.
    */
 
   @Override
-  public boolean isTimeSlotFree(LocalDateTime startTime, LocalDateTime endTime) {
+  public boolean isTimeSlotFree(LocalDateTime start, LocalDateTime end) {
     return events.stream()
             .noneMatch(event -> event.getStartTime()
-                    .isBefore(endTime) && event.getEndTime().isAfter(startTime));
+                    .isBefore(end) && event.getEndTime().isAfter(start));
   }
 
   /**

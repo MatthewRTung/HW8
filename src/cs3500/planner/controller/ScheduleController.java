@@ -12,7 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JComboBox;
 
 import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.Event;
@@ -22,26 +24,50 @@ import cs3500.planner.view.EventFrame;
 import cs3500.planner.view.ScheduleFrame;
 import cs3500.planner.xml.XMLConfigurator;
 
+
+/**
+ * Class for implementing the actions and features for scheduling within the application.
+ * This class implements methods for interacting with the central system model, managing events,
+ * and updating the view.
+ */
 public class ScheduleController implements IScheduleFeatures {
   private CentralSystem model;
   private CentralSystemFrame view;
   private String currentUser;
+  private EventFrame currentFrame;
 
 
+  /**
+   * Constructs a ScheduleController with the given view.
+   * @param view the current CentralSystemFrame.
+   */
   public ScheduleController(CentralSystemFrame view) {
     this.view = view;
-    //this.view.setController(this);
   }
 
+  /**
+   * Sets the current user in the application.
+   *
+   * @param userId The user ID to be set as the current user.
+   */
   public void setCurrentUser(String userId) {
     this.currentUser = userId;
   }
 
+  /**
+   * Gets the ID of the current user.
+   *
+   * @return The current user's ID.
+   */
   public String getCurrentUser() {
     return currentUser;
   }
 
-
+  /**
+   * Loads events from an XML file into the application.
+   *
+   * @param file The XML file containing events to be loaded.
+   */
   @Override
   public void loadXMLAction(File file) {
     XMLConfigurator configurator = new XMLConfigurator();
@@ -60,32 +86,9 @@ public class ScheduleController implements IScheduleFeatures {
     }
   }
 
-//  @Override
-//  public void saveSchedules() {
-//    JFileChooser fileChooser = new JFileChooser();
-//    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//    int option = fileChooser.showSaveDialog(view);
-//    if (option == JFileChooser.APPROVE_OPTION) {
-//      File directory = fileChooser.getSelectedFile();
-//      XMLConfigurator configurator = new XMLConfigurator();
-//
-//      try {
-//        for (Map.Entry<String, Schedule> entry : model.getAllSchedules().entrySet()) {
-//          String userId = entry.getKey();
-//          Schedule schedule = entry.getValue();
-//
-//          File scheduleFile = new File(directory, userId + "_schedule.xml");
-//
-//          // Using XMLConfigurator to write each user's schedule to an XML file
-//          configurator.writeXMLFile(schedule.getEvents(), scheduleFile.getAbsolutePath());
-//        }
-//        view.showMessage("Schedules saved successfully."); // Display success message
-//      } catch (Exception e) {
-//        view.displayError("Failed to save schedules: " + e.getMessage()); // Display error message
-//      }
-//    }
-//  }
-
+  /**
+   * Saves the current state of all schedules in the application.
+   */
   @Override
   public void saveSchedules() {
     JFileChooser fileChooser = new JFileChooser();
@@ -116,16 +119,14 @@ public class ScheduleController implements IScheduleFeatures {
     }
   }
 
-  private boolean confirmOverwrite(File file) {
-    int dialogResult = JOptionPane.showConfirmDialog(view, "The file " + file.getName() + " already exists. Do you want to overwrite it?", "Confirm Overwrite", JOptionPane.YES_NO_OPTION);
-    return dialogResult == JOptionPane.YES_OPTION;
-  }
-
-
-
+  /**
+   * Creates a new event and adds it to the schedule.
+   *
+   * @param event The event to be added.
+   */
   @Override
   public void createEvent(Event event) {
-    boolean success = model.createEvent(event.getHostId(), event);
+    boolean success = model.createEvent(getCurrentUser(), event);
     if (success) {
       view.updateView();
     } else {
@@ -133,6 +134,13 @@ public class ScheduleController implements IScheduleFeatures {
     }
   }
 
+  /**
+   * Modifies an existing event in the user's schedule.
+   *
+   * @param userId The ID of the user whose event is being modified.
+   * @param eventId The ID of the event to be modified.
+   * @param updatedEvent The new event details to replace the existing event.
+   */
   @Override
   public void modifyEvent(String userId, String eventId, Event updatedEvent) {
     boolean success = model.modifyEvent(userId, eventId, updatedEvent);
@@ -143,6 +151,12 @@ public class ScheduleController implements IScheduleFeatures {
     }
   }
 
+  /**
+   * Removes an event from the user's schedule.
+   *
+   * @param userId The ID of the user whose event is being removed.
+   * @param eventId The ID of the event to be removed.
+   */
   @Override
   public void removeEvent(String userId, String eventId) {
     boolean success = model.deleteEvent(userId, eventId);
@@ -154,34 +168,34 @@ public class ScheduleController implements IScheduleFeatures {
   }
 
 
+  /**
+   * Opens the frame for creating a new event.
+   */
   @Override
   public void openEventFrame() {
-    EventFrame eventFrame = new EventFrame(model);
+    EventFrame eventFrame = new EventFrame(model); //HERE
     eventFrame.setController(this);
     eventFrame.setVisible(true);
   }
 
-  // Add a method in ScheduleController to handle event creation from EventFrame
-//  public void createEventFromFrame(Event eventDetails) {
-//    if (eventDetails != null) {
-//      boolean success = model.createEvent(eventDetails.getUserId(), eventDetails);
-//      if (success) {
-//        view.updateView(); // Reflect the new event in the view
-//      } else {
-//        view.displayError("Failed to create event. There might be a scheduling conflict.");
-//      }
-//    } else {
-//      view.displayError("Event details are incomplete.");
-//    }
-//  }
 
-
+  /**
+   * Switches the current view to show the schedule of a different user.
+   *
+   * @param userId The ID of the user whose schedule should be displayed.
+   * @return A list of events for the specified user.
+   */
   @Override
   public List<Event> switchUser(String userId) {
     return model.getEventsForUser(userId);
   }
 
 
+  /**
+   * Launches the application with a given central system model.
+   *
+   * @param m The central system model to be used in the application.
+   */
   @Override
   public void launch(CentralSystem m) {
     this.model = m;
@@ -190,24 +204,60 @@ public class ScheduleController implements IScheduleFeatures {
     this.view.updateView();
   }
 
+  /**
+   * Opens the event details frame for a specific event.
+   *
+   * @param event The event for which the details should be displayed.
+   */
   @Override
-  public void openEventDetails(Event event, EventFrame currentFrame) {
-
+  public void openEventDetails(Event event) {
+    if (currentFrame != null && currentFrame.isVisible()) {
+      currentFrame.dispose();
+    }
+    currentFrame = new EventFrame(model); // HERE
+    currentFrame.setEventDetails(event);
+    currentFrame.setVisible(true);
+    currentFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(WindowEvent windowEvent) {
+        currentFrame = null;
+      }
+    });
   }
 
+  /**
+   * Adds a dropdown component to the view, typically for user selection.
+   *
+   * @param dropDown The JComboBox to be added to the view.
+   */
+  @Override
   public void addDropDown(JComboBox<String> dropDown) {
     for (String userName : model.getUserName()) {
       dropDown.addItem(userName);
     }
   }
 
+  /**
+   * Opens the frame for scheduling an event using a specified strategy.
+   */
+  @Override
   public void openScheduleFrame() {
     ScheduleFrame scheduleFrame = new ScheduleFrame(model);
     scheduleFrame.setController(this);
     scheduleFrame.setVisible(true);
-
   }
 
+  /**
+   * Schedules an event with a specified strategy.
+   *
+   * @param name The name of the event.
+   * @param location The location of the event.
+   * @param isOnline Indicates whether the event is online.
+   * @param duration The duration of the event.
+   * @param user The user ID of the event creator.
+   * @param invitees A comma-separated list of invitees.
+   * @param strategy The scheduling strategy to use.
+   */
   @Override
   public void scheduleEventWithStrategy(String name, String location, boolean isOnline,
                                         int duration, String user, String invitees, String strategy) {
@@ -219,11 +269,12 @@ public class ScheduleController implements IScheduleFeatures {
     } else if ("Work hours".equals(strategy)) {
       startTime = findFirstAvailableTimeDuringWorkHours(currentUser, invitees, duration);
     }
-
+    System.out.println("startTime: " + startTime);
     if (startTime != null) {
       LocalDateTime endTime = startTime.plusMinutes(duration);
+      System.out.println(name + " " + location + " " + isOnline +" " + startTime +" " + endTime +" " + currentUser);
       Event newEvent = new Event(name, location, isOnline, startTime, endTime, false, currentUser);
-      for (String invitee : Arrays.asList(invitees.split(", "))) {
+      for (String invitee : invitees.split(", ")) {
         newEvent.addInvitee(invitee);
       }
       model.createEvent(currentUser, newEvent);
@@ -233,28 +284,40 @@ public class ScheduleController implements IScheduleFeatures {
     }
   }
 
+  // displays a message to user asking for approval of overriding
+  private boolean confirmOverwrite(File file) {
+    int dialogResult = JOptionPane.showConfirmDialog(view, "The file " + file.getName()
+            + " already exists. Do you want to overwrite it?", "Confirm Overwrite", JOptionPane.YES_NO_OPTION);
+    return dialogResult == JOptionPane.YES_OPTION;
+  }
+
+  // helper method for determining the first available time using the given information
   private LocalDateTime findFirstAvailableTime(String currentUser, String invitees, int duration) {
     LocalDateTime currentTime = LocalDateTime.now().with(DayOfWeek.SUNDAY).with(LocalTime.MIN);
     LocalDateTime endTime = currentTime.plusWeeks(1);
+    System.out.println("current time: " + currentTime + " endTime: " + endTime);
 
     while (currentTime.isBefore(endTime)) {
       if (isTimeSlotAvailable(currentUser, invitees, currentTime, duration)) {
         return currentTime;
       }
-      currentTime = currentTime.plusMinutes(30);
+      currentTime = currentTime.plusMinutes(1);
     }
     return null;
   }
 
+  // helper for determining the first available time for work hours using the given information
   private LocalDateTime findFirstAvailableTimeDuringWorkHours(String currentUser, String invitees, int duration) {
-    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)).with(LocalTime.of(9, 0));
+    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)).with(
+            LocalTime.of(9, 0));
     LocalDateTime endTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
 
     while (currentTime.isBefore(endTime)) {
-      if (currentTime.getHour() >= 9 && currentTime.getHour() < 17 && isTimeSlotAvailable(currentUser, invitees, currentTime, duration)) {
+      if (currentTime.getHour() >= 9 && currentTime.getHour() < 17 && isTimeSlotAvailable(
+              currentUser, invitees, currentTime, duration)) {
         return currentTime;
       }
-      currentTime = currentTime.plusMinutes(30);
+      currentTime = currentTime.plusMinutes(1);
       if (currentTime.getHour() >= 17) {
         currentTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).with(LocalTime.of(9, 0));
       }
@@ -262,31 +325,27 @@ public class ScheduleController implements IScheduleFeatures {
     return null;
   }
 
+  // helper for determining whether the starting time and duration is available for the invitees given
   private boolean isTimeSlotAvailable(String currentUser, String invitees, LocalDateTime startTime, int duration) {
     List<String> allUsers = new ArrayList<>(Arrays.asList(invitees.split(", ")));
     if (!allUsers.contains(currentUser)) {
       allUsers.add(currentUser);
     }
-
     LocalDateTime endTime = startTime.plusMinutes(duration);
+    //System.out.println("startTime1: " + startTime);
     for (String user : allUsers) {
-      // Check if the user exists in the system before attempting to get their events
       if (!model.getUserName().contains(user)) {
-        continue; // If the user does not exist, assume they are available
+        continue;
       }
-
-      List<Event> userEvents = model.getEventsForUser(user);
-      for (Event event : userEvents) {
-        if (event.getStartTime().isBefore(endTime) && event.getEndTime().isAfter(startTime)) {
-          return false; // Time slot is not available due to a conflicting event
-        }
+      Schedule userSchedule = model.getUserSchedule(user);
+      //System.out.println("user: " + user);
+      if (userSchedule != null && !userSchedule.isTimeSlotFree(startTime, endTime)) {
+        //System.out.println("startTime2: " + startTime);
+        return false;
       }
     }
-    return true; // Time slot is available for all users
+    return true;
   }
-
-
-
 }
 
 

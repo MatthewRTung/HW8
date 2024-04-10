@@ -1,5 +1,6 @@
 package cs3500.planner.view;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -9,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAdjusters;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -36,19 +38,19 @@ public class EventFrame extends JFrame implements EventView {
   private JTextField eventNameField;
   private JTextField eventLocationField;
   private JCheckBox isOnlineCheckbox;
-  private JComboBox<String> startingDayComboBox;
-  private JComboBox<String> endingDayComboBox;
+  private JComboBox<DayOfWeek> startingDayComboBox;
+  private JComboBox<DayOfWeek> endingDayComboBox;
   private JTextField startingTimeField;
   private JTextField endingTimeField;
   private JList<String> userList;
-  private JButton removeButton;
-  private JButton modifyButton;
-  private JButton createButton;
+  private final JButton removeButton;
+  private final JButton modifyButton;
+  private final JButton createButton;
 
   /**
    * Constructor for EventFrame to initialize the fields for the class.
    */
-  public EventFrame(CentralSystem centralSystem) {
+  public EventFrame(CentralSystem model) {
     super("Event Planner");
     removeButton = new JButton("Remove Event");
     modifyButton = new JButton("Modify Event");
@@ -68,6 +70,38 @@ public class EventFrame extends JFrame implements EventView {
    */
   public void setController(IScheduleFeatures controller) {
     this.controller = controller;
+  }
+
+  /**
+   * Method used to set the details of the event for each event.
+   * @param event The event to set the details of.
+   */
+  @Override
+  public void setEventDetails(Event event) {
+    eventNameField.setText(event.getName());
+    eventLocationField.setText(event.getLocation());
+    isOnlineCheckbox.setSelected(event.isOnline());
+    DayOfWeek startDay = event.getStartTime().getDayOfWeek();
+    startingDayComboBox.setSelectedItem(startDay);
+    startingTimeField.setText(event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+    DayOfWeek endDay = event.getEndTime().getDayOfWeek();
+    endingDayComboBox.setSelectedItem(endDay);
+    endingTimeField.setText(event.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+    DefaultListModel<String> listModel = new DefaultListModel<>();
+    for (String user : event.getInvitees()) {
+      listModel.addElement(user);
+    }
+    userList.setModel(listModel);
+    userList.setSelectedValue(event.getHostId(), true);
+  }
+
+  /**
+   * Method used to display if there is an error with inputting event details.
+   * @param message The error message to display.
+   */
+  @Override
+  public void displayError(String message) {
+    JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
   }
 
   //helper method to initialize the components
@@ -128,7 +162,8 @@ public class EventFrame extends JFrame implements EventView {
   //helper method to create the starting day box
   private void initializeStartingDay(GridBagConstraints constraints) {
     //Starting Day ComboBox
-    String[] daysOfWeek = {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+    DayOfWeek[] daysOfWeek = {DayOfWeek.SUNDAY, DayOfWeek.MONDAY, DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY};
     startingDayComboBox = new JComboBox<>(daysOfWeek);
     constraints.gridx = 0;
     constraints.gridy = 3;
@@ -154,7 +189,8 @@ public class EventFrame extends JFrame implements EventView {
   //helper method to create the end day box
   private void initializeEndingDay(GridBagConstraints constraints) {
     //Ending Day ComboBox
-    String[] daysOfWeek = {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+    DayOfWeek[] daysOfWeek = {DayOfWeek.SUNDAY, DayOfWeek.MONDAY, DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY};
     endingDayComboBox = new JComboBox<>(daysOfWeek);
     constraints.gridx = 1;
     constraints.gridy = 3;
@@ -186,7 +222,7 @@ public class EventFrame extends JFrame implements EventView {
     JScrollPane userListScrollPane = new JScrollPane(userList);
     constraints.gridx = 0;
     constraints.gridy = 8;
-    constraints.gridwidth = 3; // Span four columns for list
+    constraints.gridwidth = 2; // Span four columns for list
     constraints.fill = GridBagConstraints.BOTH;
     constraints.weightx = 1.0;
     constraints.weighty = 1.0;
@@ -236,6 +272,7 @@ public class EventFrame extends JFrame implements EventView {
     setEventDetails(event); // Populate the frame with the event details
   }
 
+  // helper method for creating an event
   private void createEvent() {
     if (validateInput()) {
       Event event = gatherEventDetails();
@@ -245,6 +282,7 @@ public class EventFrame extends JFrame implements EventView {
     }
   }
 
+  // helper method for modifying an event
   private void modifyEvent() {
     if (validateInput() && currentEvent != null) {
       Event updatedEvent = gatherEventDetails();
@@ -254,6 +292,7 @@ public class EventFrame extends JFrame implements EventView {
     }
   }
 
+  // helper method for removing an event
   private void removeEvent() {
     if (currentEvent != null) {
       controller.removeEvent(currentEvent.getHostId(), currentEvent.getName());
@@ -262,38 +301,39 @@ public class EventFrame extends JFrame implements EventView {
     }
   }
 
+  // helper method for getting the event details of the current inputs of the current event
   private Event gatherEventDetails() {
     String name = eventNameField.getText();
     String location = eventLocationField.getText();
     boolean isOnline = isOnlineCheckbox.isSelected();
-
-    // Define the expected time format
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-    // Get the current date to combine with the time
-    LocalDate currentDate = LocalDate.now();
-
-    // Initialize start and end times to null
+    DayOfWeek startDay = (DayOfWeek) startingDayComboBox.getSelectedItem();
+    DayOfWeek endDay = (DayOfWeek) endingDayComboBox.getSelectedItem();
+    LocalDate startDate = adjustDateToSelectedDayOfWeek(LocalDate.of(1,1,1), startDay);
+    LocalDate endDate = adjustDateToSelectedDayOfWeek(LocalDate.of(1, 1, 1), endDay);
     LocalDateTime startTime = null;
     LocalDateTime endTime = null;
-
     try {
-      // Combine the current date with the parsed time
       LocalTime parsedStartTime = LocalTime.parse(startingTimeField.getText(), timeFormatter);
       LocalTime parsedEndTime = LocalTime.parse(endingTimeField.getText(), timeFormatter);
-      startTime = LocalDateTime.of(currentDate, parsedStartTime);
-      endTime = LocalDateTime.of(currentDate, parsedEndTime);
+      startTime = LocalDateTime.of(startDate, parsedStartTime);
+      endTime = LocalDateTime.of(endDate, parsedEndTime);
     } catch (DateTimeParseException e) {
-      // Handle incorrect format
       JOptionPane.showMessageDialog(this, "Invalid time format. Please use 'HH:mm'.",
               "Format Error", JOptionPane.ERROR_MESSAGE);
-      return null; // Return null or handle this scenario appropriately
+      return null;
     }
 
-    // Assuming the Event constructor takes the user ID as the last parameter
     return new Event(name, location, isOnline, startTime, endTime, false, controller.getCurrentUser());
   }
 
+  // Helper method to adjust the date to the selected day of the week
+  private LocalDate adjustDateToSelectedDayOfWeek(LocalDate date, DayOfWeek dayOfWeek) {
+    if (dayOfWeek != null) {
+      return date.with(TemporalAdjusters.nextOrSame(dayOfWeek));
+    }
+    return date;
+  }
 
 
   //helper method to ensure that we have valid inputs
@@ -315,29 +355,4 @@ public class EventFrame extends JFrame implements EventView {
     result += endingTimeField.getText().trim();
     return result;
   }
-
-
-  @Override
-  public void setEventDetails(Event event) {
-    eventNameField.setText(event.getName());
-    eventLocationField.setText(event.getLocation());
-    isOnlineCheckbox.setSelected(event.isOnline());
-    startingDayComboBox.setSelectedItem(event.getStartTime().getDayOfWeek().toString());
-    startingTimeField.setText(event.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-    endingDayComboBox.setSelectedItem(event.getEndTime().getDayOfWeek().toString());
-    endingTimeField.setText(event.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-    DefaultListModel<String> listModel = new DefaultListModel<>();
-    for (String user : event.getInvitees()) {
-      listModel.addElement(user);
-    }
-    userList.setModel(listModel);
-    userList.setSelectedValue(event.getHostId(), true);
-  }
-
-  @Override
-  public void displayError(String message) {
-    JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
-  }
-
-
 }

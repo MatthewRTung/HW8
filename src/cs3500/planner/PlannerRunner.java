@@ -5,9 +5,6 @@ import cs3500.planner.controller.ScheduleController;
 import cs3500.planner.model.CentralSystem;
 
 import cs3500.planner.view.CentralSystemFrame;
-import cs3500.planner.view.CentralSystemView;
-import cs3500.planner.view.PlannerTextView;
-import cs3500.planner.view.PlannerView;
 
 /**
  * Class that contains the main method for running the program.
