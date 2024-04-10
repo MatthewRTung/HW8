@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<events>
+    <event>
+        <name>Meeting with Team</name>
+        <time>
+            <start-day>SATURDAY</start-day>
+            <start>1000</start>
+            <end-day>SATURDAY</end-day>
+            <end>1100</end>
+        </time>
+        <location>
+            <online>false</online>
+            <place>Conference Room A</place>
+        </location>
+        <users/>
+    </event>
+    <event>
+        <name>Online Webinar</name>
+        <time>
+            <start-day>SUNDAY</start-day>
+            <start>1500</start>
+            <end-day>SUNDAY</end-day>
+            <end>1700</end>
+        </time>
+        <location>
+            <online>true</online>
+            <place>Online: Zoom</place>
+        </location>
+        <users/>
+    </event>
+</events>
