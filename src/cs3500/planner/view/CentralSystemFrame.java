@@ -22,8 +22,6 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,9 +41,7 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
   private JPanel schedulePanel;
   private JComboBox<String> userDropDown;
   private final List<Event> events;
-  private final CentralSystem model;
   private final Map<Rectangle, Event> eventRectangles;
-  private EventFrame currentFrame;
   private final Point dragStart;
   private final Point dragEnd;
 
@@ -55,12 +51,11 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
    */
   public CentralSystemFrame(CentralSystem model) {
     super("Planner Central System");
-    this.model = model;
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setLayout(new BorderLayout());
     events = new ArrayList<>();
     eventRectangles = new HashMap<>();
-    currentFrame = null;
+    EventFrame currentFrame = null;
     dragStart = null;
     dragEnd = null;
     setController(controller);
@@ -232,7 +227,8 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     for (Event event : events) {
       LocalDateTime startTime = event.getStartTime();
       LocalDateTime endTime = event.getEndTime();
-      int dayCol = (startTime.getDayOfWeek().getValue() == 7) ? 0 : startTime.getDayOfWeek().getValue();
+      int dayCol = (startTime.getDayOfWeek().getValue() == 7) ? 0 :
+              startTime.getDayOfWeek().getValue();
       int startHour = startTime.getHour();
       int endHour = endTime.getHour();
       long daySpan = java.time.temporal.ChronoUnit.DAYS.between(

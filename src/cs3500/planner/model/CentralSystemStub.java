@@ -45,7 +45,7 @@ public class CentralSystemStub extends CentralSystem {
   }
 
   /**
-   * Method that simulates removing a user
+   * Method that simulates removing a user.
    * @param user The UserID of the user to remove.
    * @return True if the user was successfully removed, false otherwise.
    */

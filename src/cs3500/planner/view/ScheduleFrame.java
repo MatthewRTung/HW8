@@ -16,7 +16,8 @@ import java.awt.Insets;
 import java.awt.Component;
 
 /**
- * The ScheduleFrame class implements the essential method to display a list of events in the planner application.
+ * The ScheduleFrame class implements the essential method to display a
+ * list of events in the planner application.
  */
 public class ScheduleFrame extends JFrame implements ScheduleView {
   private final JTextField eventNameField;

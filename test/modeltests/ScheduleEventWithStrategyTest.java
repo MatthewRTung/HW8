@@ -1,69 +1,111 @@
 package modeltests;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import cs3500.planner.controller.IScheduleFeatures;
-import cs3500.planner.model.CentralSystem;
-import cs3500.planner.view.CentralSystemFrame;
+import java.time.LocalDateTime;
 
+import cs3500.planner.model.CentralSystemStub;
+import cs3500.planner.model.Event;
+import cs3500.planner.controller.ScheduleController;
+import cs3500.planner.view.CentralSystemFrameStub;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * Tests for the scheduleEventWithStrategy method in the scheduling system.
+ * This class contains tests that verify the functionality of scheduling events
+ * using different strategies like "Any time" and "Work hours".
+ */
 public class ScheduleEventWithStrategyTest {
-
-  private IScheduleFeatures controller;
-  private CentralSystem model;
-  private CentralSystemFrame view;
+  private ScheduleController controller;
+  private CentralSystemStub model;
+  private CentralSystemFrameStub view;
 
   @Before
   public void setup() {
-    
+    model = new CentralSystemStub();
+    view = new CentralSystemFrameStub(model);
+    controller = new ScheduleController(view);
+    controller.launch(model);
   }
 
   @Test
   public void testAnyTimeStrategyWithAvailableSlot() {
-    // Scenario: There is an available slot for the given duration and invitees.
-    // Expectation: The event is scheduled at the first available time slot.
-    // Implement test logic...
+    model.addUser("user1");
+    controller.setCurrentUser("user1");
+    controller.scheduleEventWithStrategy("Meeting", "Office", false, 30, "user1",
+            "", "Any time");
+    assertTrue(model.isEventAddedForUser("user1", new Event("Meeting", "Office", false,
+            LocalDateTime.now(), LocalDateTime.now().plusMinutes(30), false, "user1")));
   }
 
   @Test
   public void testAnyTimeStrategyWithNoAvailableSlot() {
-    // Scenario: There are no available slots for the given duration and invitees within a week.
-    // Expectation: The event is not scheduled, and an error message is displayed.
-    // Implement test logic...
+    model.addUser("user1");
+    controller.setCurrentUser("user1");
+    // Assuming there's no slot available in the stub implementation for this test
+    controller.scheduleEventWithStrategy("Meeting", "Office", false, 30,
+            "user1", "", "Any time");
+    assertFalse(view.isViewUpdated());
+    assertTrue(view.isErrorDisplayed("No available time slot found for the event."));
   }
 
   @Test
-  public void testWorkHoursStrategyWithAvailableSlot() {
-    // Scenario: There is an available slot during work hours for the given duration and invitees.
-    // Expectation: The event is scheduled at the first available time slot within work hours.
-    // Implement test logic...
+  public void gvailableSlot() {
+    model.addUser("user1");
+    controller.setCurrentUser("user1");
+    controller.scheduleEventWithStrategy("Meeting", "Office", false, 30, "user1",
+            "", "Work hours");
+    assertTrue(model.isEventAddedForUser("user1", new Event("Meeting", "Office", false,
+            LocalDateTime.now(), LocalDateTime.now().plusMinutes(30), false, "user1")));
   }
 
   @Test
   public void testWorkHoursStrategyWithNoAvailableSlot() {
-    // Scenario: There are no available slots during work hours for the given duration and invitees.
-    // Expectation: The event is not scheduled, and an error message is displayed.
-    // Implement test logic...
+    model.addUser("user1");
+    controller.setCurrentUser("user1");
+    // Assuming there's no slot available during work hours in the stub implementation for this test
+    controller.scheduleEventWithStrategy("Meeting", "Office", false, 30, "user1",
+            "", "Work hours");
+    assertFalse(view.isViewUpdated());
+    assertTrue(view.isErrorDisplayed("No available time slot found for the event."));
   }
 
   @Test
   public void testInvalidStrategy() {
-    // Scenario: An invalid scheduling strategy is provided.
-    // Expectation: The method should handle this gracefully, possibly with an error message or a default behavior.
-    // Implement test logic...
+    model.addUser("user1");
+    controller.setCurrentUser("user1");
+    controller.scheduleEventWithStrategy("Meeting", "Office", false, 30, "user1",
+            "", "Invalid strategy");
+    assertFalse(model.isUserAdded("user1"));
+    assertFalse(view.isViewUpdated());
   }
 
   @Test
   public void testZeroDuration() {
-    // Scenario: The event duration is set to zero.
-    // Expectation: The event should not be scheduled, and an appropriate response should be provided.
-    // Implement test logic...
+    model.addUser("user1");
+    controller.setCurrentUser("user1");
+    controller.scheduleEventWithStrategy("Meeting", "Office", false, 0, "user1",
+            "", "Any time");
+    assertFalse(model.isEventAddedForUser("user1", new Event("Meeting", "Office", false,
+            LocalDateTime.now(), LocalDateTime.now(), false, "user1")));
+    assertTrue(view.isErrorDisplayed("No available time slot found for the event."));
   }
 
   @Test
   public void testOverlappingEvents() {
-    // Scenario: The only available slot overlaps with another event but is still considered available due to a small overlap (e.g., 1 minute).
-    // Expectation: Depending on the implementation, it should either schedule the event or recognize the slot as unavailable.
-    // Implement test logic...
+    model.addUser("user1");
+    controller.setCurrentUser("user1");
+    LocalDateTime now = LocalDateTime.now();
+    Event existingEvent = new Event("Existing Meeting", "Office", false, now, now.plusHours(1),
+            false, "user1");
+    model.createEvent("user1", existingEvent);
+    controller.scheduleEventWithStrategy("New Meeting", "Office", false, 60, "user1",
+            "", "Any time");
+    assertFalse(view.isViewUpdated());
+    assertTrue(view.isErrorDisplayed("No available time slot found for the event."));
   }
 }
 

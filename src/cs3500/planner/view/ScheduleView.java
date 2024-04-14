@@ -1,9 +1,6 @@
 package cs3500.planner.view;
 
-import java.util.List;
-
 import cs3500.planner.controller.IScheduleFeatures;
-import cs3500.planner.model.Event;
 
 /**
  * The ScheduleView interface defines the essential method that any schedule view class

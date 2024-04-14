@@ -5,6 +5,9 @@ import java.util.List;
 
 import cs3500.planner.model.CentralSystem;
 
+/**
+ * Stub implementation used for testing.
+ */
 public class FakeCentralSystemView extends CentralSystemFrame {
   private List<String> messages = new ArrayList<>();
   private String lastError = null;
@@ -34,14 +37,25 @@ public class FakeCentralSystemView extends CentralSystemFrame {
     messages.add(message);
   }
 
+  /**
+   * Returns the last error message.
+   * @return the last error message.
+   */
   public String getLastError() {
     return lastError;
   }
 
+  /**
+   * Returns the list of messages.
+   * @return the list of messages.
+   */
   public List<String> getMessages() {
     return messages;
   }
 
+  /**
+   * Resets the list of messages.
+   */
   public void reset() {
     messages.clear();
     lastError = null;

@@ -11,7 +11,7 @@ public class EventFrameStub extends EventFrame {
   /**
    * Constructor for EventFrame to initialize the fields for the class.
    *
-   * @param model
+   * @param model the model to be used.
    */
   public EventFrameStub(CentralSystem model) {
     super(model);

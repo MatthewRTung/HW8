@@ -35,6 +35,7 @@ public class ScheduleController implements IScheduleFeatures {
   private CentralSystemFrame view;
   private String currentUser;
   private EventFrame currentFrame;
+  private String schedulingStrategy;
 
 
   /**
@@ -61,6 +62,14 @@ public class ScheduleController implements IScheduleFeatures {
    */
   public String getCurrentUser() {
     return currentUser;
+  }
+
+  /**
+   * Sets the default scheduling strategy for the controller.
+   * @param schedulingStrategy The scheduling strategy to be used ("anytime" or "workhours").
+   */
+  public void setDefaultSchedulingStrategy(String schedulingStrategy) {
+    this.schedulingStrategy = schedulingStrategy;
   }
 
   /**
@@ -109,12 +118,12 @@ public class ScheduleController implements IScheduleFeatures {
               configurator.writeXMLFile(schedule.getEvents(), scheduleFile.getAbsolutePath());
             }
           }
-          view.showMessage("Schedules saved successfully."); // Display success message
+          view.showMessage("Schedules saved successfully.");
         } catch (Exception e) {
-          view.displayError("Failed to save schedules: " + e.getMessage()); // Display error message
+          view.displayError("Failed to save schedules: " + e.getMessage());
         }
       } else {
-        view.displayError("Invalid directory selected."); // Handle null or invalid directory selection.
+        view.displayError("Invalid directory selected.");
       }
     }
   }
@@ -158,12 +167,14 @@ public class ScheduleController implements IScheduleFeatures {
    * @param eventId The ID of the event to be removed.
    */
   @Override
-  public void removeEvent(String userId, String eventId) {
+  public boolean removeEvent(String userId, String eventId) {
     boolean success = model.deleteEvent(userId, eventId);
     if (success) {
       view.updateView();
+      return true;
     } else {
       view.displayError("Error deleting event.");
+      return false;
     }
   }
 
@@ -260,19 +271,20 @@ public class ScheduleController implements IScheduleFeatures {
    */
   @Override
   public void scheduleEventWithStrategy(String name, String location, boolean isOnline,
-                                        int duration, String user, String invitees, String strategy) {
+                                        int duration, String user,
+                                        String invitees, String strategy) {
+    if (strategy == null || strategy.isEmpty()) {
+      strategy = this.schedulingStrategy;
+    }
     String currentUser = getCurrentUser();
     LocalDateTime startTime = null;
-
-    if ("Any time".equals(strategy)) {
+    if ("Any time".equals(strategy) || "anytime".equals(strategy)) {
       startTime = findFirstAvailableTime(currentUser, invitees, duration);
-    } else if ("Work hours".equals(strategy)) {
+    } else if ("Work hours".equals(strategy) || "workhours".equals(strategy)) {
       startTime = findFirstAvailableTimeDuringWorkHours(currentUser, invitees, duration);
     }
-    System.out.println("startTime: " + startTime);
     if (startTime != null) {
       LocalDateTime endTime = startTime.plusMinutes(duration);
-      System.out.println(name + " " + location + " " + isOnline +" " + startTime +" " + endTime +" " + currentUser);
       Event newEvent = new Event(name, location, isOnline, startTime, endTime, false, currentUser);
       for (String invitee : invitees.split(", ")) {
         newEvent.addInvitee(invitee);
@@ -284,14 +296,15 @@ public class ScheduleController implements IScheduleFeatures {
     }
   }
 
-  // displays a message to user asking for approval of overriding
+  //displays a message to user asking for approval of overriding
   private boolean confirmOverwrite(File file) {
-    int dialogResult = JOptionPane.showConfirmDialog(view, "The file " + file.getName()
-            + " already exists. Do you want to overwrite it?", "Confirm Overwrite", JOptionPane.YES_NO_OPTION);
+    int dialogResult = JOptionPane.showConfirmDialog(view, "The file " + file.getName() +
+            " already exists. Do you want to overwrite it?",
+            "Confirm Overwrite", JOptionPane.YES_NO_OPTION);
     return dialogResult == JOptionPane.YES_OPTION;
   }
 
-  // helper method for determining the first available time using the given information
+  //helper method for determining the first available time using the given information
   private LocalDateTime findFirstAvailableTime(String currentUser, String invitees, int duration) {
     LocalDateTime currentTime = LocalDateTime.now().with(DayOfWeek.SUNDAY).with(LocalTime.MIN);
     LocalDateTime endTime = currentTime.plusWeeks(1);
@@ -306,10 +319,11 @@ public class ScheduleController implements IScheduleFeatures {
     return null;
   }
 
-  // helper for determining the first available time for work hours using the given information
-  private LocalDateTime findFirstAvailableTimeDuringWorkHours(String currentUser, String invitees, int duration) {
-    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)).with(
-            LocalTime.of(9, 0));
+  //helper for determining the first available time for work hours using the given information
+  private LocalDateTime findFirstAvailableTimeDuringWorkHours(String currentUser,
+                                                              String invitees, int duration) {
+    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(
+            DayOfWeek.MONDAY)).with(LocalTime.of(9, 0));
     LocalDateTime endTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
 
     while (currentTime.isBefore(endTime)) {
@@ -319,28 +333,27 @@ public class ScheduleController implements IScheduleFeatures {
       }
       currentTime = currentTime.plusMinutes(1);
       if (currentTime.getHour() >= 17) {
-        currentTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).with(LocalTime.of(9, 0));
+        currentTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).with(
+                LocalTime.of(9, 0));
       }
     }
     return null;
   }
 
-  // helper for determining whether the starting time and duration is available for the invitees given
-  private boolean isTimeSlotAvailable(String currentUser, String invitees, LocalDateTime startTime, int duration) {
+  //helper for determining whether the starting time and duration is available for the invitees
+  private boolean isTimeSlotAvailable(String currentUser, String invitees,
+                                      LocalDateTime startTime, int duration) {
     List<String> allUsers = new ArrayList<>(Arrays.asList(invitees.split(", ")));
     if (!allUsers.contains(currentUser)) {
       allUsers.add(currentUser);
     }
     LocalDateTime endTime = startTime.plusMinutes(duration);
-    //System.out.println("startTime1: " + startTime);
     for (String user : allUsers) {
       if (!model.getUserName().contains(user)) {
         continue;
       }
       Schedule userSchedule = model.getUserSchedule(user);
-      //System.out.println("user: " + user);
       if (userSchedule != null && !userSchedule.isTimeSlotFree(startTime, endTime)) {
-        //System.out.println("startTime2: " + startTime);
         return false;
       }
     }

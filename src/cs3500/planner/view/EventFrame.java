@@ -162,8 +162,7 @@ public class EventFrame extends JFrame implements EventView {
   //helper method to create the starting day box
   private void initializeStartingDay(GridBagConstraints constraints) {
     //Starting Day ComboBox
-    DayOfWeek[] daysOfWeek = {DayOfWeek.SUNDAY, DayOfWeek.MONDAY, DayOfWeek.TUESDAY,
-            DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY};
+    DayOfWeek[] daysOfWeek = DayOfWeek.values();
     startingDayComboBox = new JComboBox<>(daysOfWeek);
     constraints.gridx = 0;
     constraints.gridy = 3;
@@ -189,8 +188,7 @@ public class EventFrame extends JFrame implements EventView {
   //helper method to create the end day box
   private void initializeEndingDay(GridBagConstraints constraints) {
     //Ending Day ComboBox
-    DayOfWeek[] daysOfWeek = {DayOfWeek.SUNDAY, DayOfWeek.MONDAY, DayOfWeek.TUESDAY,
-            DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY};
+    DayOfWeek[] daysOfWeek = DayOfWeek.values();
     endingDayComboBox = new JComboBox<>(daysOfWeek);
     constraints.gridx = 1;
     constraints.gridy = 3;
@@ -323,8 +321,8 @@ public class EventFrame extends JFrame implements EventView {
               "Format Error", JOptionPane.ERROR_MESSAGE);
       return null;
     }
-
-    return new Event(name, location, isOnline, startTime, endTime, false, controller.getCurrentUser());
+    return new Event(name, location, isOnline, startTime, endTime, false,
+            controller.getCurrentUser());
   }
 
   // Helper method to adjust the date to the selected day of the week
@@ -335,24 +333,10 @@ public class EventFrame extends JFrame implements EventView {
     return date;
   }
 
-
   //helper method to ensure that we have valid inputs
   private boolean validateInput() {
     return !eventNameField.getText().trim().isEmpty() &&
             !startingTimeField.getText().trim().isEmpty() &&
             !endingTimeField.getText().trim().isEmpty();
-  }
-
-  //helper method to get the event details
-  public String getEventDetails() {
-    String result = "";
-    result += eventNameField.getText().trim() + " ";
-    result += eventLocationField.getText().trim() + " ";
-    result += isOnlineCheckbox.isSelected() + " ";
-    result += startingDayComboBox.getSelectedItem() + " ";
-    result += startingTimeField.getText().trim() + " ";
-    result += endingDayComboBox.getSelectedItem() + " ";
-    result += endingTimeField.getText().trim();
-    return result;
   }
 }

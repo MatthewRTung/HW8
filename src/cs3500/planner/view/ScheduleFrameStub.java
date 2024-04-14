@@ -29,8 +29,8 @@ public class ScheduleFrameStub extends ScheduleFrame {
   }
 
   /**
-   * Displays an error message.
-   * This method simulates the display of an error message in the schedule frame by printing it to the console.
+   * This method simulates the display of an error message in the schedule frame by printing
+   * it to the console.
    *
    * @param message The error message to be displayed.
    */

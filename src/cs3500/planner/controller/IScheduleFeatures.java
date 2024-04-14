@@ -3,7 +3,7 @@ package cs3500.planner.controller;
 import java.io.File;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
 
 import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.Event;
@@ -49,7 +49,7 @@ public interface IScheduleFeatures {
    * @param userId The ID of the user whose event is being removed.
    * @param eventId The ID of the event to be removed.
    */
-  void removeEvent(String userId, String eventId);
+  boolean removeEvent(String userId, String eventId);
 
   /**
    * Opens the frame for creating a new event.
@@ -118,6 +118,12 @@ public interface IScheduleFeatures {
    */
   void setCurrentUser(String user);
 
+  /**
+   * Sets the strategy provided by command line.
+   *
+   * @param strategy The strategy to be set as.
+   */
+  void setDefaultSchedulingStrategy(String strategy);
 }
 
 

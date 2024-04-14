@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<schedule id="CSStudent">
+    <event>
+        <name>Algorithms Lecture</name>
+        <time>
+            <start-day>Monday</start-day>
+            <start>0930</start>
+            <end-day>Monday</end-day>
+            <end>1050</end>
+        </time>
+        <location>
+            <online>false</online>
+            <place>West Hall 301</place>
+        </location>
+        <users>
+            <uid>CSStudent</uid>
+            <uid>Dr. Smith</uid>
+        </users>
+    </event>
+    <event>
+        <name>Data Structures Lab</name>
+        <time>
+            <start-day>Wednesday</start-day>
+            <start>1400</start>
+            <end-day>Wednesday</end-day>
+            <end>1530</end>
+        </time>
+        <location>
+            <online>false</online>
+            <place>Comp Sci Building Lab 203</place>
+        </location>
+        <users>
+            <uid>CSStudent</uid>
+            <uid>TA_JohnDoe</uid>
+        </users>
+    </event>
+    <event>
+        <name>Machine Learning Seminar</name>
+        <time>
+            <start-day>Friday</start-day>
+            <start>1200</start>
+            <end-day>Friday</end-day>
+            <end>1330</end>
+        </time>
+        <location>
+            <online>true</online>
+            <place>Zoom Meeting ID: 123-456-789</place>
+        </location>
+        <users>
+            <uid>CSStudent</uid>
+            <uid>Prof. Miller</uid>
+        </users>
+    </event>
+    <event>
+        <name>Study Group Session</name>
+        <time>
+            <start-day>Thursday</start-day>
+            <start>1800</start>
+            <end-day>Thursday</end-day>
+            <end>2000</end>
+        </time>
+        <location>
+            <online>true</online>
+            <place>Google Meet Link: meet.google.com/xyz-studygroup</place>
+        </location>
+        <users>
+            <uid>CSStudent</uid>
+            <uid>Alice</uid>
+            <uid>Bob</uid>
+        </users>
+    </event>
+</schedule>
