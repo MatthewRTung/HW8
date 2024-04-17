@@ -24,16 +24,15 @@ import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
 
 import cs3500.planner.controller.IScheduleFeatures;
-import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.Event;
+import cs3500.planner.model.EventModel;
 
 /**
  * The GUI that creates the event frame for users to input event details.
  */
 public class EventFrame extends JFrame implements EventView {
   private IScheduleFeatures controller;
-  private CentralSystemFrame frame;
-  private Event currentEvent;
+  private EventModel currentEvent;
 
   private JTextField eventNameField;
   private JTextField eventLocationField;
@@ -50,7 +49,7 @@ public class EventFrame extends JFrame implements EventView {
   /**
    * Constructor for EventFrame to initialize the fields for the class.
    */
-  public EventFrame(CentralSystem model) {
+  public EventFrame() {
     super("Event Planner");
     removeButton = new JButton("Remove Event");
     modifyButton = new JButton("Modify Event");
@@ -77,7 +76,7 @@ public class EventFrame extends JFrame implements EventView {
    * @param event The event to set the details of.
    */
   @Override
-  public void setEventDetails(Event event) {
+  public void setEventDetails(EventModel event) {
     eventNameField.setText(event.getName());
     eventLocationField.setText(event.getLocation());
     isOnlineCheckbox.setSelected(event.isOnline());

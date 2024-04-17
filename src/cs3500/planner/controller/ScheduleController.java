@@ -17,8 +17,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 
 import cs3500.planner.model.CentralSystem;
+import cs3500.planner.model.CentralSystemModel;
 import cs3500.planner.model.Event;
-import cs3500.planner.model.Schedule;
+import cs3500.planner.model.EventModel;
+import cs3500.planner.model.ScheduleModel;
 import cs3500.planner.view.CentralSystemFrame;
 import cs3500.planner.view.EventFrame;
 import cs3500.planner.view.ScheduleFrame;
@@ -31,8 +33,8 @@ import cs3500.planner.xml.XMLConfigurator;
  * and updating the view.
  */
 public class ScheduleController implements IScheduleFeatures {
-  private CentralSystem model;
-  private CentralSystemFrame view;
+  private CentralSystemModel model;
+  private final CentralSystemFrame view;
   private String currentUser;
   private EventFrame currentFrame;
   private String schedulingStrategy;
@@ -82,11 +84,11 @@ public class ScheduleController implements IScheduleFeatures {
     XMLConfigurator configurator = new XMLConfigurator();
     try {
       String userId = configurator.readScheduleUserId(file.getAbsolutePath());
-      List<Event> events = configurator.readXMLFile(file.getAbsolutePath());
+      List<EventModel> events = configurator.readXMLFile(file.getAbsolutePath());
       if (!model.getUserName().contains(userId)) {
         model.addUser(userId);
       }
-      for (Event event : events) {
+      for (EventModel event : events) {
         model.createEvent(userId, event);
       }
       view.updateView();
@@ -109,9 +111,9 @@ public class ScheduleController implements IScheduleFeatures {
         XMLConfigurator configurator = new XMLConfigurator();
 
         try {
-          for (Map.Entry<String, Schedule> entry : model.getAllSchedules().entrySet()) {
+          for (Map.Entry<String, ScheduleModel> entry : model.getAllSchedules().entrySet()) {
             String userId = entry.getKey();
-            Schedule schedule = entry.getValue();
+            ScheduleModel schedule = entry.getValue();
             File scheduleFile = new File(directory, userId + "_schedule.xml");
 
             if (!scheduleFile.exists() || confirmOverwrite(scheduleFile)) {
@@ -134,7 +136,7 @@ public class ScheduleController implements IScheduleFeatures {
    * @param event The event to be added.
    */
   @Override
-  public void createEvent(Event event) {
+  public void createEvent(EventModel event) {
     boolean success = model.createEvent(getCurrentUser(), event);
     if (success) {
       view.updateView();
@@ -151,7 +153,7 @@ public class ScheduleController implements IScheduleFeatures {
    * @param updatedEvent The new event details to replace the existing event.
    */
   @Override
-  public void modifyEvent(String userId, String eventId, Event updatedEvent) {
+  public void modifyEvent(String userId, String eventId, EventModel updatedEvent) {
     boolean success = model.modifyEvent(userId, eventId, updatedEvent);
     if (success) {
       view.updateView();
@@ -184,7 +186,7 @@ public class ScheduleController implements IScheduleFeatures {
    */
   @Override
   public void openEventFrame() {
-    EventFrame eventFrame = new EventFrame(model); //HERE
+    EventFrame eventFrame = new EventFrame(); //HERE
     eventFrame.setController(this);
     eventFrame.setVisible(true);
   }
@@ -197,7 +199,7 @@ public class ScheduleController implements IScheduleFeatures {
    * @return A list of events for the specified user.
    */
   @Override
-  public List<Event> switchUser(String userId) {
+  public List<EventModel> switchUser(String userId) {
     return model.getEventsForUser(userId);
   }
 
@@ -221,11 +223,11 @@ public class ScheduleController implements IScheduleFeatures {
    * @param event The event for which the details should be displayed.
    */
   @Override
-  public void openEventDetails(Event event) {
+  public void openEventDetails(EventModel event) {
     if (currentFrame != null && currentFrame.isVisible()) {
       currentFrame.dispose();
     }
-    currentFrame = new EventFrame(model); // HERE
+    currentFrame = new EventFrame(); // HERE
     currentFrame.setEventDetails(event);
     currentFrame.setVisible(true);
     currentFrame.addWindowListener(new WindowAdapter() {
@@ -352,7 +354,7 @@ public class ScheduleController implements IScheduleFeatures {
       if (!model.getUserName().contains(user)) {
         continue;
       }
-      Schedule userSchedule = model.getUserSchedule(user);
+      ScheduleModel userSchedule = model.getUserSchedule(user);
       if (userSchedule != null && !userSchedule.isTimeSlotFree(startTime, endTime)) {
         return false;
       }

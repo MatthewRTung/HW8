@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import cs3500.planner.model.Event;
+import cs3500.planner.model.EventModel;
 import cs3500.planner.model.Schedule;
 
 import static org.junit.Assert.assertEquals;
@@ -86,7 +87,7 @@ public class ScheduleTest {
   @Test
   public void getEventsAtSpecificTime() {
     schedule.addEvent(event1);
-    List<Event> eventsAtTime = schedule.getEventsAt(event1.getStartTime().plusMinutes(30));
+    List<EventModel> eventsAtTime = schedule.getEventsAt(event1.getStartTime().plusMinutes(30));
     assertFalse(eventsAtTime.isEmpty());
     assertEquals(event1.getName(), eventsAtTime.get(0).getName());
   }
@@ -94,7 +95,7 @@ public class ScheduleTest {
   @Test
   public void getWeeklyEventsTest() {
     schedule.addEvent(event1);
-    Map<DayOfWeek, List<Event>> weeklyEvents = schedule.getWeeklyEvents();
+    Map<DayOfWeek, List<EventModel>> weeklyEvents = schedule.getWeeklyEvents();
     DayOfWeek dayOfWeek = event1.getStartTime().getDayOfWeek();
     assertTrue(weeklyEvents.containsKey(dayOfWeek));
     assertFalse(weeklyEvents.get(dayOfWeek).isEmpty());

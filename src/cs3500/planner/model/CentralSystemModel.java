@@ -15,7 +15,6 @@ public interface CentralSystemModel extends ReadOnlyCentralSystemModel {
    */
   void addUser(String userId);
 
-
   /**
    * Removes a user from the system.
    *
@@ -41,7 +40,7 @@ public interface CentralSystemModel extends ReadOnlyCentralSystemModel {
    * @return true if the event was successfully created and added, false if not
    *         or the user does not exist.
    */
-  boolean createEvent(String userId, Event event);
+  boolean createEvent(String userId, EventModel event);
 
   /**
    * Modifies an existing event in a user's schedule.
@@ -52,7 +51,7 @@ public interface CentralSystemModel extends ReadOnlyCentralSystemModel {
    * @return true if the event was successfully modified, false if the event does not exist,
    *         or the user does not exist.
    */
-  boolean modifyEvent(String userId, String eventId, Event updatedEvent);
+  boolean modifyEvent(String userId, String eventId, EventModel updatedEvent);
 
   /**
    * Deletes an event from a user's schedule.
@@ -67,5 +66,5 @@ public interface CentralSystemModel extends ReadOnlyCentralSystemModel {
    * Retrieves the list of all the schedules in the system.
    * @return The list of all schedules.
    */
-  Map<String, Schedule> getAllSchedules();
+  Map<String, ScheduleModel> getAllSchedules();
 }

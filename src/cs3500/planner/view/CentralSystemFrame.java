@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import cs3500.planner.controller.IScheduleFeatures;
-import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.Event;
+import cs3500.planner.model.EventModel;
 
 /**
  * CentralSystemFrame to create the central system gui grid that displays the schedule.
@@ -40,16 +40,15 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
   private IScheduleFeatures controller;
   private JPanel schedulePanel;
   private JComboBox<String> userDropDown;
-  private final List<Event> events;
-  private final Map<Rectangle, Event> eventRectangles;
+  private final List<EventModel> events;
+  private final Map<Rectangle, EventModel> eventRectangles;
   private final Point dragStart;
   private final Point dragEnd;
 
   /**
    * Constructor for the CentralSystemFrame.
-   * @param model the central system model
    */
-  public CentralSystemFrame(CentralSystem model) {
+  public CentralSystemFrame() {
     super("Planner Central System");
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setLayout(new BorderLayout());
@@ -62,7 +61,6 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     initializeMenu();
     initializeSchedulePanel();
     eventListener();
-    //initializeControlPanel();
     this.pack();
     this.setVisible(true);
   }
@@ -224,7 +222,7 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     int cellWidth = schedulePanel.getWidth() / 7;
     int cellHeight = schedulePanel.getHeight() / 24;
     graphics.setColor(Color.RED);
-    for (Event event : events) {
+    for (EventModel event : events) {
       LocalDateTime startTime = event.getStartTime();
       LocalDateTime endTime = event.getEndTime();
       int dayCol = (startTime.getDayOfWeek().getValue() == 7) ? 0 :
@@ -283,9 +281,9 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     schedulePanel.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent mouseEvent) {
-        for (Map.Entry<Rectangle, Event> entry : eventRectangles.entrySet()) {
+        for (Map.Entry<Rectangle, EventModel> entry : eventRectangles.entrySet()) {
           if (entry.getKey().contains(mouseEvent.getPoint())) {
-            Event event = entry.getValue();
+            EventModel event = entry.getValue();
             controller.openEventDetails(event);
             break;
           }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cs3500.planner.model.CentralSystem;
+import cs3500.planner.model.CentralSystemModel;
 
 /**
  * CentralSystemFrameStub used to test the ScheduleController.
@@ -15,10 +16,9 @@ public class CentralSystemFrameStub extends CentralSystemFrame {
 
   /**
    * Constructor for the CentralSystemFrameStub.
-   * @param model The model to use for the frame.
    */
-  public CentralSystemFrameStub(CentralSystem model) {
-    super(model);
+  public CentralSystemFrameStub(CentralSystemModel model) {
+    super();
   }
 
   /**

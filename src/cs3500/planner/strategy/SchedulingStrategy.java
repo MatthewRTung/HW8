@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
  */
 public interface SchedulingStrategy {
 
+
     /**
      * Determines the next available time slot for scheduling an event given the user, their invitees, and the event's duration.
      *

@@ -63,3 +63,8 @@ Changes for PT3:
 - adjusted the layout and size of ScheduleFrame to improve user interaction and visual appeal.
 - introduced methods to manage the "current user" in the model and controller for better scheduling and event management.
 - enhanced error handling and user feedback in the GUI, ensuring users are informed about operations and issues.
+
+
+Changes for HW8:
+- Refactored our code so that fields and parameters use interface types instead of Object types for our customers
+- 

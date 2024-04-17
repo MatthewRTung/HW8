@@ -63,7 +63,7 @@ public class Event implements EventModel, Comparable<EventModel> {
    */
 
   @Override
-  public boolean overlaps(Event event) {
+  public boolean overlaps(EventModel event) {
     return !startTime.isAfter(event.getEndTime()) && !endTime.isBefore(event.getStartTime());
   }
 
@@ -103,6 +103,11 @@ public class Event implements EventModel, Comparable<EventModel> {
     } else {
       return location;
     }
+  }
+
+  @Override
+  public String getHostID() {
+    return "";
   }
 
   /**

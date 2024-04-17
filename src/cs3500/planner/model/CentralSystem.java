@@ -69,7 +69,7 @@ public class CentralSystem implements CentralSystemModel {
    */
 
   @Override
-  public boolean createEvent(String userId, Event event) {
+  public boolean createEvent(String userId, EventModel event) {
     Schedule schedule = userSchedules.get(userId);
     if (schedule != null && schedule.isTimeSlotFree(event.getStartTime(), event.getEndTime())) {
       return schedule.addEvent(event);
@@ -88,10 +88,10 @@ public class CentralSystem implements CentralSystemModel {
    */
 
   @Override
-  public boolean modifyEvent(String userId, String eventId, Event updatedEvent) {
+  public boolean modifyEvent(String userId, String eventId, EventModel updatedEvent) {
     Schedule schedule = userSchedules.get(userId);
     if (schedule != null) {
-      Event existingEvent = schedule.getEventById(eventId);
+      EventModel existingEvent = schedule.getEventById(eventId);
       if (existingEvent != null) {
         if (!existingEvent.getHostId().equals(updatedEvent.getHostId())) {
           return false;
@@ -124,7 +124,7 @@ public class CentralSystem implements CentralSystemModel {
    * @return The list of all schedules.
    */
   @Override
-  public Map<String, Schedule> getAllSchedules() {
+  public Map<String, ScheduleModel> getAllSchedules() {
     return new HashMap<>(userSchedules);
   }
 
@@ -146,7 +146,7 @@ public class CentralSystem implements CentralSystemModel {
    */
 
   @Override
-  public boolean doesEventConflict(Event event, String userName) {
+  public boolean doesEventConflict(EventModel event, String userName) {
     Schedule userSchedule = userSchedules.get(userName);
     if (userSchedule == null) {
       throw new IllegalArgumentException("User does not exist.");
@@ -161,7 +161,7 @@ public class CentralSystem implements CentralSystemModel {
    */
 
   @Override
-  public List<Event> getEventsForUser(String userName) {
+  public List<EventModel> getEventsForUser(String userName) {
     Schedule userSchedule = userSchedules.get(userName);
     if (userSchedule == null) {
       throw new IllegalArgumentException("User does not exist.");

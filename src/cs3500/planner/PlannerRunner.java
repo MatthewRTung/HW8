@@ -29,7 +29,7 @@ public class PlannerRunner {
     }
 
     CentralSystem model = new CentralSystem();
-    CentralSystemFrame frame = new CentralSystemFrame(model);
+    CentralSystemFrame frame = new CentralSystemFrame();
     ScheduleController controller = new ScheduleController(frame);
     frame.setController(controller);
     controller.setDefaultSchedulingStrategy(strategy);

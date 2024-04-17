@@ -19,7 +19,7 @@ public class FakeCentralSystemView extends CentralSystemFrame {
    * @param model the central system model
    */
   public FakeCentralSystemView(CentralSystem model) {
-    super(model);
+    super();
   }
 
   @Override

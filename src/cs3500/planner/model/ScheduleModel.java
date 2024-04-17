@@ -14,7 +14,7 @@ public interface ScheduleModel extends ReadOnlyScheduleModel {
    * @param event The event to add.
    * @return true if the event was successfully added, false if it conflicts with an existing event.
    */
-  boolean addEvent(Event event);
+  boolean addEvent(EventModel event);
 
   /**
    * Removes a specified event from the schedule.
@@ -30,20 +30,20 @@ public interface ScheduleModel extends ReadOnlyScheduleModel {
    * @return true if the event was successfully modified, false if the modification violates
    *         constraints or the event was not found.
    */
-  boolean modifyEvent(String eventId, Event newEvent);
+  boolean modifyEvent(String eventId, EventModel newEvent);
 
   /**
    * Finds and returns a list of events happening at a specific time.
    * @param dateTime The date and time for which to find events.
    * @return A list of events occurring at the specified time.
    */
-  List<Event> getEventsAt(LocalDateTime dateTime);
+  List<EventModel> getEventsAt(LocalDateTime dateTime);
 
   /**
    * Retrieves all events scheduled for a specific user.
    * @return A list of all events in the schedule.
    */
-  List<Event> getAllEvents();
+  List<EventModel> getAllEvents();
 
   /**
    * Checks if a specific time slot in the schedule is free.
@@ -58,12 +58,12 @@ public interface ScheduleModel extends ReadOnlyScheduleModel {
    * @param eventId The unique identifier of the event to retrieve.
    * @return The event with the specified ID, or null if not found.
    */
-  Event getEventById(String eventId);
+  EventModel getEventById(String eventId);
 
   /**
    * Retrieves a map of events organized by the day of the week.
    *
    * @return A map where each key is a DayOfWeek and each value is a list of events for that day.
    */
-  Map<DayOfWeek, List<Event>> getWeeklyEvents();
+  Map<DayOfWeek, List<EventModel>> getWeeklyEvents();
 }

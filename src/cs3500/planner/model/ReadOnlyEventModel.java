@@ -1,6 +1,7 @@
 package cs3500.planner.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 /**
  * Provides a read-only view of an event's details.
@@ -24,4 +25,17 @@ public interface ReadOnlyEventModel {
    * @return the end time of the event.
    */
   LocalDateTime getEndTime();
+
+
+  public String getName();
+
+
+  public boolean isOnline();
+
+
+  public String getLocation();
+
+
+
+  public String getHostID();
 }

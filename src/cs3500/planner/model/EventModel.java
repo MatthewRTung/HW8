@@ -13,7 +13,7 @@ public interface EventModel extends ReadOnlyEventModel {
    * @param event the event to check for overlap
    * @return true if the event overlaps with another event, false otherwise
    */
-  boolean overlaps(Event event);
+  boolean overlaps(EventModel event);
 
   /**
    * Adds a user to the event's list of invitees.

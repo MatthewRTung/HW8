@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.JComboBox;
 
 import cs3500.planner.model.CentralSystem;
-import cs3500.planner.model.Event;
+import cs3500.planner.model.EventModel;
 
 /**
  * Interface for defining the actions and features for scheduling within the application.
@@ -32,7 +32,7 @@ public interface IScheduleFeatures {
    *
    * @param event The event to be added.
    */
-  void createEvent(Event event);
+  void createEvent(EventModel event);
 
   /**
    * Modifies an existing event in the user's schedule.
@@ -41,7 +41,7 @@ public interface IScheduleFeatures {
    * @param eventId The ID of the event to be modified.
    * @param event The new event details to replace the existing event.
    */
-  void modifyEvent(String userId, String eventId, Event event);
+  void modifyEvent(String userId, String eventId, EventModel event);
 
   /**
    * Removes an event from the user's schedule.
@@ -62,7 +62,7 @@ public interface IScheduleFeatures {
    * @param userID The ID of the user whose schedule should be displayed.
    * @return A list of events for the specified user.
    */
-  List<Event> switchUser(String userID);
+  List<EventModel> switchUser(String userID);
 
   /**
    * Launches the application with a given central system model.
@@ -76,7 +76,7 @@ public interface IScheduleFeatures {
    *
    * @param event The event for which the details should be displayed.
    */
-  void openEventDetails(Event event);
+  void openEventDetails(EventModel event);
 
   /**
    * Adds a dropdown component to the view, typically for user selection.

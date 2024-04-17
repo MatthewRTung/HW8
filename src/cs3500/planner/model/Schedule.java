@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public class Schedule implements ScheduleModel {
   //list of all events in the user's schedule
-  private List<Event> events;
+  private List<EventModel> events;
 
   /**
    * Constructor an empty schedule with no events.
@@ -30,7 +30,7 @@ public class Schedule implements ScheduleModel {
    */
 
   @Override
-  public boolean addEvent(Event event) {
+  public boolean addEvent(EventModel event) {
     if (isTimeSlotFree(event.getStartTime(), event.getEndTime())) {
       events.add(event);
       return true;
@@ -58,7 +58,7 @@ public class Schedule implements ScheduleModel {
    */
 
   @Override
-  public boolean modifyEvent(String eventId, Event newEvent) {
+  public boolean modifyEvent(String eventId, EventModel newEvent) {
     for (int i = 0; i < events.size(); i++) {
       if (events.get(i).getName().equals(eventId)) {
         if (isTimeSlotFree(newEvent.getStartTime(), newEvent.getEndTime())
@@ -81,7 +81,7 @@ public class Schedule implements ScheduleModel {
    */
 
   @Override
-  public List<Event> getEventsAt(LocalDateTime dateTime) {
+  public List<EventModel> getEventsAt(LocalDateTime dateTime) {
     return events.stream()
             .filter(event -> !event.getStartTime().isAfter(dateTime)
                     && !event.getEndTime().isBefore(dateTime))
@@ -94,7 +94,7 @@ public class Schedule implements ScheduleModel {
    */
 
   @Override
-  public List<Event> getAllEvents() {
+  public List<EventModel> getAllEvents() {
     return new ArrayList<>(events);
   }
 
@@ -119,7 +119,7 @@ public class Schedule implements ScheduleModel {
    */
 
   @Override
-  public Event getEventById(String eventId) {
+  public EventModel getEventById(String eventId) {
     return events.stream()
             .filter(event -> event.getName().equals(eventId))
             .findFirst()
@@ -133,15 +133,15 @@ public class Schedule implements ScheduleModel {
    */
 
   @Override
-  public Map<DayOfWeek, List<Event>> getWeeklyEvents() {
-    Map<DayOfWeek, List<Event>> weeklyEvents = new EnumMap<>(DayOfWeek.class);
+  public Map<DayOfWeek, List<EventModel>> getWeeklyEvents() {
+    Map<DayOfWeek, List<EventModel>> weeklyEvents = new EnumMap<>(DayOfWeek.class);
     for (DayOfWeek day : DayOfWeek.values()) {
       weeklyEvents.put(day, new ArrayList<>());
     }
-    for (Event event : events) {
+    for (EventModel event : events) {
       LocalDate eventDate = event.getStartTime().toLocalDate();
       DayOfWeek dayOfWeek = eventDate.getDayOfWeek();
-      List<Event> eventsForDay = weeklyEvents.get(dayOfWeek);
+      List<EventModel> eventsForDay = weeklyEvents.get(dayOfWeek);
       eventsForDay.add(event);
     }
     return weeklyEvents;
@@ -153,7 +153,7 @@ public class Schedule implements ScheduleModel {
    */
 
   @Override
-  public List<Event> getEvents() {
+  public List<EventModel> getEvents() {
     return new ArrayList<>(events);
   }
 
@@ -163,7 +163,7 @@ public class Schedule implements ScheduleModel {
    * @return true if the time is open, false otherwise.
    */
   @Override
-  public boolean isFree(Event event) {
+  public boolean isFree(EventModel event) {
     return isTimeSlotFree(event.getStartTime(), event.getEndTime());
   }
 }

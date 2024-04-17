@@ -13,7 +13,7 @@ public class ScheduleStub extends Schedule {
    * Constructor for the ScheduleStub.
    * @return A list of events.
    */
-  public List<Event> getEvents() {
+  public List<EventModel> getEvents() {
     // Return a fixed collection of events for testing
     return Collections.singletonList(new Event("Test", "Team Meeting", true,
             LocalDateTime.now(), LocalDateTime.now().plusHours(2), false, "Host1"));

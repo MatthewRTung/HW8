@@ -48,9 +48,9 @@ public class PlannerTextView extends JFrame implements PlannerView {
    */
   private String formatSchedule(ScheduleModel schedule) {
     StringBuilder builder = new StringBuilder();
-    Map<DayOfWeek, List<Event>> weeklyEvents = schedule.getWeeklyEvents();
+    Map<DayOfWeek, List<EventModel>> weeklyEvents = schedule.getWeeklyEvents();
     for (DayOfWeek day : DayOfWeek.values()) {
-      List<Event> events = weeklyEvents.get(day);
+      List<EventModel> events = weeklyEvents.get(day);
       builder.append(day.toString()).append(":\n");
       for (EventModel event : events) {
         builder.append("\tname: ").append(event.getName()).append("\n");

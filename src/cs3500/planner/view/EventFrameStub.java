@@ -14,7 +14,7 @@ public class EventFrameStub extends EventFrame {
    * @param model the model to be used.
    */
   public EventFrameStub(CentralSystem model) {
-    super(model);
+    super();
   }
 
   /**

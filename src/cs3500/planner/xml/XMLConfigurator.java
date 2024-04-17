@@ -24,6 +24,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import cs3500.planner.model.Event;
+import cs3500.planner.model.EventModel;
 
 /**
  * Class used to read and write XML files.
@@ -31,8 +32,8 @@ import cs3500.planner.model.Event;
 public class XMLConfigurator implements XMLProcessor {
 
   @Override
-  public List<Event> readXMLFile(String filePath) {
-    List<Event> events = new ArrayList<>();
+  public List<EventModel> readXMLFile(String filePath) {
+    List<EventModel> events = new ArrayList<>();
     LocalDate referenceDate;
     referenceDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
     try {
@@ -52,14 +53,14 @@ public class XMLConfigurator implements XMLProcessor {
   }
 
   @Override
-  public void writeXMLFile(List<Event> events, String filePath) {
+  public void writeXMLFile(List<EventModel> events, String filePath) {
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document doc = builder.newDocument();
       Element rootElement = doc.createElement("events");
       doc.appendChild(rootElement);
-      for (Event event : events) {
+      for (EventModel event : events) {
         Element eventElement = createEventElement(doc, event);
         rootElement.appendChild(eventElement);
       }
@@ -139,7 +140,7 @@ public class XMLConfigurator implements XMLProcessor {
   }
 
   //helper method to create and XML element for an event
-  private Element createEventElement(Document doc, Event event) {
+  private Element createEventElement(Document doc, EventModel event) {
     Element eventElement = doc.createElement("event");
     Element name = doc.createElement("name");
     name.appendChild(doc.createTextNode(event.getName()));
@@ -154,7 +155,7 @@ public class XMLConfigurator implements XMLProcessor {
   }
 
   //helper method to create the XML element for the time of an event
-  private Element createTimeElement(Document doc, Event event) {
+  private Element createTimeElement(Document doc, EventModel event) {
     Element time = doc.createElement("time");
     Element startDay = doc.createElement("start-day");
     startDay.appendChild(doc.createTextNode(event.getStartTime().getDayOfWeek().toString()));
@@ -174,7 +175,7 @@ public class XMLConfigurator implements XMLProcessor {
   }
 
   //helper method to create the XML element for the location of an event
-  private Element createLocationElement(Document doc, Event event) {
+  private Element createLocationElement(Document doc, EventModel event) {
     Element location = doc.createElement("location");
     Element online = doc.createElement("online");
     online.appendChild(doc.createTextNode(Boolean.toString(event.isOnline())));
@@ -186,7 +187,7 @@ public class XMLConfigurator implements XMLProcessor {
   }
 
   //helper method to create the XML element for the users of an event
-  private Element createUsersElement(Document doc, Event event) {
+  private Element createUsersElement(Document doc, EventModel event) {
     Element users = doc.createElement("users");
     for (String user : event.getInvitees()) {
       Element userId = doc.createElement("uid");

@@ -19,12 +19,12 @@ public interface ReadOnlyCentralSystemModel {
    * @param userName the name of the user to check the event against.
    * @return true if there is a conflict with the user's schedule, false otherwise.
    */
-  boolean doesEventConflict(Event event, String userName);
+  boolean doesEventConflict(EventModel event, String userName);
 
   /**
    * Retrieves a list of events for a specified user.
    * @param userName the name of the user whose events are to be retrieved.
    * @return a list of events associated with the specified user.
    */
-  List<Event> getEventsForUser(String userName);
+  List<EventModel> getEventsForUser(String userName);
 }
