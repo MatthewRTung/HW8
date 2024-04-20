@@ -65,6 +65,17 @@ Changes for PT3:
 - enhanced error handling and user feedback in the GUI, ensuring users are informed about operations and issues.
 
 
-Changes for HW8:
+Changes for made for customers for HW8:
 - Refactored our code so that fields and parameters use interface types instead of Object types for our customers
-- 
+- Created a strategy package to handle strategic scheduling
+- Created SchedulingStrategy interface with 2 classes each implementing their strategy
+- Removed the strategy implementation from view into each respective class
+- Created adapters for the provided code
+We made all of those changes because, otherwise, our code wouldn't work with our customers. Making these changes
+did not break our code, and, if anything, enhanced it as explained in the self review.
+
+What works and doesn't work:
+- Given that the code we were provided had a lot of issues and didn't work correctly (given that it was 
+tightly coupled), there wasn't much we could do. Our implementation doesn't work.
+
+

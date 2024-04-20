@@ -23,5 +23,5 @@ public interface SchedulingStrategy {
      * @return A {@code LocalDateTime} representing the start time of the next available time slot,
      *         or {@code null} if no suitable time slot is found.
      */
-    LocalDateTime findNextAvailableTime(String user, String invitees, int duration);
+    LocalDateTime findStartTime(String user, String invitees, int duration);
 }

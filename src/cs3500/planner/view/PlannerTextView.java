@@ -30,10 +30,10 @@ public class PlannerTextView extends JFrame implements PlannerView {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    Map<String, Schedule> allSchedules = centralSystem.getAllSchedules();
-    for (Map.Entry<String, Schedule> entry : allSchedules.entrySet()) {
+    Map<String, ScheduleModel> allSchedules = centralSystem.getAllSchedules();
+    for (Map.Entry<String, ScheduleModel> entry : allSchedules.entrySet()) {
       String userId = entry.getKey();
-      Schedule schedule = entry.getValue();
+      ScheduleModel schedule = entry.getValue();
       builder.append("User: ").append(userId).append("\n");
       builder.append(formatSchedule(schedule));
       builder.append("\n");

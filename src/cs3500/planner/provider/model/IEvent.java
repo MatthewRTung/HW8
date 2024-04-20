@@ -1,6 +1,5 @@
 package cs3500.planner.provider.model;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,12 +62,4 @@ public interface IEvent {
    * of the event.
    */
   List<Integer> getDuration();
-
-  /**
-   * builds an event
-   */
-  static IEvent buildEvent(String name, IUser creator, ILocation loc, ITime startTime,
-                           ITime endTime, ArrayList<IUser> invitees) {
-    return new Event(name, creator, loc, startTime, endTime, invitees);
-  }
 }

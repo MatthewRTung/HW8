@@ -13,8 +13,4 @@ public interface ILocation {
    * @return true if the event is online, false if the event is not online.
    */
   boolean getOnline();
-
-  static ILocation buildLocation(boolean isOnline, String location) {
-    return new Location(isOnline, location);
-  }
 }

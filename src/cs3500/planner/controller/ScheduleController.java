@@ -3,12 +3,7 @@ package cs3500.planner.controller;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +16,9 @@ import cs3500.planner.model.CentralSystemModel;
 import cs3500.planner.model.Event;
 import cs3500.planner.model.EventModel;
 import cs3500.planner.model.ScheduleModel;
+import cs3500.planner.strategy.AnyTimeStrategy;
+import cs3500.planner.strategy.SchedulingStrategy;
+import cs3500.planner.strategy.WorkHoursStrategy;
 import cs3500.planner.view.CentralSystemFrame;
 import cs3500.planner.view.EventFrame;
 import cs3500.planner.view.ScheduleFrame;
@@ -37,6 +35,7 @@ public class ScheduleController implements IScheduleFeatures {
   private final CentralSystemFrame view;
   private String currentUser;
   private EventFrame currentFrame;
+  private SchedulingStrategy strategy;
   private String schedulingStrategy;
 
 
@@ -260,6 +259,16 @@ public class ScheduleController implements IScheduleFeatures {
     scheduleFrame.setVisible(true);
   }
 
+  public void setStrategy(String strategyName) {
+    if ("Any time".equals(strategyName) || "anytime".equals(strategyName)) {
+      this.strategy = new AnyTimeStrategy(model);
+    } else if ("Work hours".equals(strategyName) || "workhours".equals(strategyName)) {
+      this.strategy = new WorkHoursStrategy(model);
+    } else {
+      throw new IllegalArgumentException("Invalid strategy name");
+    }
+  }
+
   /**
    * Schedules an event with a specified strategy.
    *
@@ -269,25 +278,19 @@ public class ScheduleController implements IScheduleFeatures {
    * @param duration The duration of the event.
    * @param user The user ID of the event creator.
    * @param invitees A comma-separated list of invitees.
-   * @param strategy The scheduling strategy to use.
    */
   @Override
   public void scheduleEventWithStrategy(String name, String location, boolean isOnline,
                                         int duration, String user,
-                                        String invitees, String strategy) {
-    if (strategy == null || strategy.isEmpty()) {
-      strategy = this.schedulingStrategy;
-    }
+                                        String invitees, String strategyName) {
+    setStrategy(strategyName);
     String currentUser = getCurrentUser();
-    LocalDateTime startTime = null;
-    if ("Any time".equals(strategy) || "anytime".equals(strategy)) {
-      startTime = findFirstAvailableTime(currentUser, invitees, duration);
-    } else if ("Work hours".equals(strategy) || "workhours".equals(strategy)) {
-      startTime = findFirstAvailableTimeDuringWorkHours(currentUser, invitees, duration);
-    }
+    LocalDateTime startTime = strategy.findStartTime(currentUser, invitees, duration);
+
     if (startTime != null) {
       LocalDateTime endTime = startTime.plusMinutes(duration);
-      Event newEvent = new Event(name, location, isOnline, startTime, endTime, false, currentUser);
+      Event newEvent = new Event(name, location, isOnline, startTime, endTime,
+              false, currentUser);
       for (String invitee : invitees.split(", ")) {
         newEvent.addInvitee(invitee);
       }
@@ -304,62 +307,6 @@ public class ScheduleController implements IScheduleFeatures {
             " already exists. Do you want to overwrite it?",
             "Confirm Overwrite", JOptionPane.YES_NO_OPTION);
     return dialogResult == JOptionPane.YES_OPTION;
-  }
-
-  //helper method for determining the first available time using the given information
-  private LocalDateTime findFirstAvailableTime(String currentUser, String invitees, int duration) {
-    LocalDateTime currentTime = LocalDateTime.now().with(DayOfWeek.SUNDAY).with(LocalTime.MIN);
-    LocalDateTime endTime = currentTime.plusWeeks(1);
-    System.out.println("current time: " + currentTime + " endTime: " + endTime);
-
-    while (currentTime.isBefore(endTime)) {
-      if (isTimeSlotAvailable(currentUser, invitees, currentTime, duration)) {
-        return currentTime;
-      }
-      currentTime = currentTime.plusMinutes(1);
-    }
-    return null;
-  }
-
-  //helper for determining the first available time for work hours using the given information
-  private LocalDateTime findFirstAvailableTimeDuringWorkHours(String currentUser,
-                                                              String invitees, int duration) {
-    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(
-            DayOfWeek.MONDAY)).with(LocalTime.of(9, 0));
-    LocalDateTime endTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
-
-    while (currentTime.isBefore(endTime)) {
-      if (currentTime.getHour() >= 9 && currentTime.getHour() < 17 && isTimeSlotAvailable(
-              currentUser, invitees, currentTime, duration)) {
-        return currentTime;
-      }
-      currentTime = currentTime.plusMinutes(1);
-      if (currentTime.getHour() >= 17) {
-        currentTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).with(
-                LocalTime.of(9, 0));
-      }
-    }
-    return null;
-  }
-
-  //helper for determining whether the starting time and duration is available for the invitees
-  private boolean isTimeSlotAvailable(String currentUser, String invitees,
-                                      LocalDateTime startTime, int duration) {
-    List<String> allUsers = new ArrayList<>(Arrays.asList(invitees.split(", ")));
-    if (!allUsers.contains(currentUser)) {
-      allUsers.add(currentUser);
-    }
-    LocalDateTime endTime = startTime.plusMinutes(duration);
-    for (String user : allUsers) {
-      if (!model.getUserName().contains(user)) {
-        continue;
-      }
-      ScheduleModel userSchedule = model.getUserSchedule(user);
-      if (userSchedule != null && !userSchedule.isTimeSlotFree(startTime, endTime)) {
-        return false;
-      }
-    }
-    return true;
   }
 }
 

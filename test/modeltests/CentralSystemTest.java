@@ -9,6 +9,7 @@ import java.util.Map;
 import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.Event;
 import cs3500.planner.model.Schedule;
+import cs3500.planner.model.ScheduleModel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -104,7 +105,7 @@ public class CentralSystemTest {
   public void testGetAllSchedules() {
     centralSystem.addUser("user1");
     centralSystem.addUser("user2");
-    Map<String, Schedule> schedules = centralSystem.getAllSchedules();
+    Map<String, ScheduleModel> schedules = centralSystem.getAllSchedules();
     assertEquals(2, schedules.size());
   }
 }

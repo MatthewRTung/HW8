@@ -1,0 +1,25 @@
+Self Review
+
+Reflecting on the development of our scheduling application, I recognize several areas where different choices
+could have led to improvements in both the structure and maintainability of our code. Initially, we integrated
+directly with concrete implementations, especially evident in how our view components managed interactions
+with model data. This approach significantly restricted the flexibility of our codebase, complicating the
+process of implementing changes without impacting multiple components. From this, I've learned the importance
+of using interfaces from the onset, which would have allowed for a more decoupled architecture, improving both
+the testability and scalability of the application.
+
+Another key insight was gained from how we handled scheduling strategies within the controller, which, in
+hindsight, did not adhere closely enough to the Single Responsibility Principle. This setup made the
+controller overly complex and less adaptable to changes or extensions in scheduling logic. Had we abstracted
+these strategies into their own classes earlier, it would have simplified the controller's responsibilities and
+made the system more robust against changes in business requirements.
+
+As for our experience working with service providers, it was mixed. They were responsive and
+timely in their communications, which helped maintain project momentum. However, they're code was very tightly
+coupled, and, therefore, very hard to create adapters for. We tried our very best, but couldn't get it working.
+
+
+
+
+
+

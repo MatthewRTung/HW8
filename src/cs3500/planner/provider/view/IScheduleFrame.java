@@ -1,7 +1,9 @@
 package cs3500.planner.provider.view;
 
 import cs3500.planner.provider.controller.IFeatures;
+import cs3500.planner.provider.model.IUser;
 import cs3500.planner.provider.model.ReadOnlyPlannerModel;
+
 
 /**
  * Represents a frame for a schedule.
@@ -40,5 +42,5 @@ public interface IScheduleFrame {
    * Finds the user associated with the username. Safe since all users are assumed to have
    * different names.
    */
-  User findUserByName(String username);
+  IUser findUserByName(String username);
 }

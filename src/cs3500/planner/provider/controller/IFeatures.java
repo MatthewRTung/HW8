@@ -56,8 +56,16 @@ public interface IFeatures {
                    ArrayList<IUser> invitees);
 
   /**
-   * Deletes a given event from a planner.
-   * @param e the event to be deleted
+   * Deletes an event from a planner.
+   * @param name the event name.
+   * @param creator the event creator.
+   * @param locString the location of the event.
+   * @param isOnline tells us if event is online or not.
+   * @param startingTime starting time of event.
+   * @param startDay start day of event.
+   * @param endingTime end time of event.
+   * @param endDay end day of event.
+   * @param invitees list of invitees of event.
    */
   void deleteEvent(String name, IUser creator, String locString, boolean isOnline,
                    String startingTime, String startDay, String endingTime, String endDay,

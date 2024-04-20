@@ -1,8 +1,11 @@
 package cs3500.planner;
 
+import java.util.Arrays;
+
+import cs3500.planner.controller.ScheduleAdapter;
 import cs3500.planner.controller.ScheduleController;
 import cs3500.planner.model.CentralSystem;
-
+import cs3500.planner.provider.view.ISchedulePanel;
 import cs3500.planner.view.CentralSystemFrame;
 
 /**
@@ -15,25 +18,30 @@ public class PlannerRunner {
    * @param args command-line arguments.
    */
   public static void main(String[] args) {
-    if (args.length != 1) {
-      System.err.println("Error: Expected a single argument for scheduling strategy" +
-              " (\"anytime\" or \"workhours\").");
+    if (args.length < 1) {
+      System.err.println("Error: No arguments provided. Expecting scheduling strategy.");
       System.exit(1);
     }
 
     String strategy = args[0];
-    if (!"anytime".equals(strategy) && !"workhours".equals(strategy)) {
-      System.err.println("Error: Invalid scheduling strategy. Acceptable values are" +
-              " \"anytime\" or \"workhours\".");
-      System.exit(1);
-    }
+    boolean useProviderView = Arrays.asList(args).contains("--use-provider-view");
 
     CentralSystem model = new CentralSystem();
+
     CentralSystemFrame frame = new CentralSystemFrame();
     ScheduleController controller = new ScheduleController(frame);
-    frame.setController(controller);
     controller.setDefaultSchedulingStrategy(strategy);
 
+    if (useProviderView) {
+      ISchedulePanel providerView = null;
+      ISchedulePanel view = new ScheduleAdapter(providerView, null, null);
+      frame.setController(controller);
+    } else {
+      frame.setController(controller);
+    }
     controller.launch(model);
+    frame.setVisible(true);
   }
+
+
 }

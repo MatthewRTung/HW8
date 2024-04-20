@@ -49,5 +49,5 @@ public interface PlannerModel {
 
   List<IUser> getClients();
 
-  public boolean hasTimeOverlap(IEvent event);
+  boolean hasTimeOverlap(IEvent event);
 }
