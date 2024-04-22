@@ -3,7 +3,6 @@ package cs3500.planner.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.CentralSystemModel;
 
 /**
@@ -11,8 +10,8 @@ import cs3500.planner.model.CentralSystemModel;
  */
 public class CentralSystemFrameStub extends CentralSystemFrame {
   private boolean viewUpdated = false;
-  private List<String> displayedMessages = new ArrayList<>();
-  private List<String> displayedErrors = new ArrayList<>();
+  private final List<String> displayedMessages = new ArrayList<>();
+  private final List<String> displayedErrors = new ArrayList<>();
 
   /**
    * Constructor for the CentralSystemFrameStub.

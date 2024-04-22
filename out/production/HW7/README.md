@@ -83,6 +83,5 @@ Extra Credit:
 Level 0:
 
 Level 1:
-We created an abstract class for two subclasses that handle the saturday and standard schedules. This allows us to keep
-the functionality of the old code starting on Sunday but also allowing us to use command line args to start the planner 
-on Saturday.
+For this level we decided to create two class. SaturdayEventRenderer and StandardEventRenderer. I noticed that there was a lot of code that
+could be reused since both classes had the same functionality but were just slightly different in the way they determined

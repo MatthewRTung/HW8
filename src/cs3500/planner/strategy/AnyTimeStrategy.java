@@ -3,21 +3,17 @@ package cs3500.planner.strategy;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.temporal.TemporalAdjusters;
 
 import cs3500.planner.model.CentralSystemModel;
-import cs3500.planner.model.ScheduleModel;
 
 /**
  * AnyTimeStrategy is a scheduling strategy that finds the earliest available time slot
- * within the next week where all specified users, including the current user, can participate.
+ * within the next week when all specified users, including the current user, can participate.
  * It searches for a time slot in minute increments starting from the current time and progresses
  * through the next week.
  */
-public class AnyTimeStrategy implements SchedulingStrategy {
-  private CentralSystemModel model;
+public class AnyTimeStrategy extends SchedulingStrategyBase {
 
   /**
    * Constructs an AnyTimeStrategy with the given CentralSystemModel.
@@ -25,7 +21,7 @@ public class AnyTimeStrategy implements SchedulingStrategy {
    * @param model the CentralSystemModel to use for scheduling
    */
   public AnyTimeStrategy(CentralSystemModel model) {
-    this.model = model;
+    super(model);
   }
 
   /**
@@ -40,7 +36,17 @@ public class AnyTimeStrategy implements SchedulingStrategy {
    */
   @Override
   public LocalDateTime findStartTime(String currentUser, String invitees, int duration) {
-    LocalDateTime currentTime = LocalDateTime.now().with(DayOfWeek.SUNDAY).with(LocalTime.MIN);
+//    LocalDateTime currentTime = LocalDateTime.now().with(DayOfWeek.SUNDAY).with(LocalTime.MIN);
+//    LocalDateTime endTime = currentTime.plusWeeks(1);
+//
+//    while (currentTime.isBefore(endTime)) {
+//      if (isTimeSlotAvailable(currentUser, invitees, currentTime, duration)) {
+//        return currentTime;
+//      }
+//      currentTime = currentTime.plusMinutes(1);
+//    }
+//    return null;
+    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).with(LocalTime.MIN);
     LocalDateTime endTime = currentTime.plusWeeks(1);
 
     while (currentTime.isBefore(endTime)) {
@@ -53,23 +59,9 @@ public class AnyTimeStrategy implements SchedulingStrategy {
   }
 
   // helper method for determining whether the provided time stamp is open
-  private boolean isTimeSlotAvailable(String currentUser, String invitees,
+  protected boolean isTimeSlotAvailable(String currentUser, String invitees,
                                       LocalDateTime startTime, int duration) {
-    List<String> allUsers = new ArrayList<>(Arrays.asList(invitees.split(", ")));
-    if (!allUsers.contains(currentUser)) {
-      allUsers.add(currentUser);
-    }
-    LocalDateTime endTime = startTime.plusMinutes(duration);
-    for (String user : allUsers) {
-      if (!model.getUserName().contains(user)) {
-        continue;
-      }
-      ScheduleModel userSchedule = model.getUserSchedule(user);
-      if (userSchedule != null && !userSchedule.isTimeSlotFree(startTime, endTime)) {
-        return false;
-      }
-    }
-    return true;
+    return timeSlotHelper(currentUser, invitees, startTime, duration);
   }
 }
 

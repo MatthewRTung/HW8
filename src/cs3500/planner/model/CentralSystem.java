@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class CentralSystem implements CentralSystemModel {
   //Maps user Ids to their ScheduleModel objects
-  private final Map<String, Schedule> userSchedules;
+  private final Map<String, ScheduleModel> userSchedules;
 
   /**
    * Constructs a new CentralSystem object with an empty schedule.
@@ -23,11 +23,11 @@ public class CentralSystem implements CentralSystemModel {
   @Override
   public void addUser(String userId) {
     if (!userSchedules.containsKey(userId)) {
-      userSchedules.put(userId, new Schedule());
+      userSchedules.put(userId, new StandardSchedule());
     }
   }
 
-  /**
+  /**4
    * Removes a user from the system.
    *
    * @param userId The UserID of the user to remove.
@@ -52,7 +52,7 @@ public class CentralSystem implements CentralSystemModel {
    */
 
   @Override
-  public Schedule getUserSchedule(String userId) {
+  public ScheduleModel getUserSchedule(String userId) {
     if (userId == null || userId.isEmpty()) {
       throw new IllegalArgumentException("User ID cannot be empty or null.");
     }
@@ -70,7 +70,7 @@ public class CentralSystem implements CentralSystemModel {
 
   @Override
   public boolean createEvent(String userId, EventModel event) {
-    Schedule schedule = userSchedules.get(userId);
+    ScheduleModel schedule = userSchedules.get(userId);
     if (schedule != null && schedule.isTimeSlotFree(event.getStartTime(), event.getEndTime())) {
       return schedule.addEvent(event);
     }
@@ -89,7 +89,7 @@ public class CentralSystem implements CentralSystemModel {
 
   @Override
   public boolean modifyEvent(String userId, String eventId, EventModel updatedEvent) {
-    Schedule schedule = userSchedules.get(userId);
+    ScheduleModel schedule = userSchedules.get(userId);
     if (schedule != null) {
       EventModel existingEvent = schedule.getEventById(eventId);
       if (existingEvent != null) {
@@ -147,7 +147,7 @@ public class CentralSystem implements CentralSystemModel {
 
   @Override
   public boolean doesEventConflict(EventModel event, String userName) {
-    Schedule userSchedule = userSchedules.get(userName);
+    ScheduleModel userSchedule = userSchedules.get(userName);
     if (userSchedule == null) {
       throw new IllegalArgumentException("User does not exist.");
     }
@@ -162,11 +162,10 @@ public class CentralSystem implements CentralSystemModel {
 
   @Override
   public List<EventModel> getEventsForUser(String userName) {
-    Schedule userSchedule = userSchedules.get(userName);
+    ScheduleModel userSchedule = userSchedules.get(userName);
     if (userSchedule == null) {
       throw new IllegalArgumentException("User does not exist.");
     }
     return userSchedule.getEvents();
   }
-
 }

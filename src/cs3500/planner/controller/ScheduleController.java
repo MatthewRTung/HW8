@@ -3,6 +3,7 @@ package cs3500.planner.controller;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -266,7 +267,7 @@ public class ScheduleController implements IScheduleFeatures {
     if ("Any time".equals(strategyName) || "anytime".equals(strategyName)) {
       this.strategy = new AnyTimeStrategy(model);
     } else if ("Work hours".equals(strategyName) || "workhours".equals(strategyName)) {
-      this.strategy = new WorkHoursStrategy(model);
+      this.strategy = new WorkHoursStrategy(model, DayOfWeek.MONDAY);
     } else {
       throw new IllegalArgumentException("Invalid strategy name");
     }

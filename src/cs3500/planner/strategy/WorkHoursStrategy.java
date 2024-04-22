@@ -4,12 +4,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import cs3500.planner.model.CentralSystemModel;
-import cs3500.planner.model.ScheduleModel;
 
 /**
  * WorkHoursStrategy is a scheduling strategy that finds the earliest available time slot
@@ -18,16 +14,15 @@ import cs3500.planner.model.ScheduleModel;
  * If a time slot is not available within the current week's work hours, it continues searching
  * from the next Monday.
  */
-public class WorkHoursStrategy implements SchedulingStrategy {
-  private CentralSystemModel model;
+public class WorkHoursStrategy extends SchedulingStrategyBase {
 
   /**
    * Constructs a WorkHoursStrategy with the given CentralSystemModel.
    *
    * @param model the CentralSystemModel to use for scheduling
    */
-  public WorkHoursStrategy(CentralSystemModel model) {
-    this.model = model;
+  public WorkHoursStrategy(CentralSystemModel model, DayOfWeek dayOfWeek) {
+    super(model);
   }
 
   /**
@@ -44,19 +39,33 @@ public class WorkHoursStrategy implements SchedulingStrategy {
    */
   @Override
   public LocalDateTime findStartTime(String currentUser, String invitees, int duration) {
-    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(
-            DayOfWeek.MONDAY)).with(LocalTime.of(9, 0));
-    LocalDateTime endTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
+//    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(
+//            DayOfWeek.MONDAY)).with(LocalTime.of(9, 0));
+//    LocalDateTime endTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
+//
+//    while (currentTime.isBefore(endTime)) {
+//      if (currentTime.getHour() >= 9 && currentTime.getHour() < 17 && isTimeSlotAvailable(
+//              currentUser, invitees, currentTime, duration)) {
+//        return currentTime;
+//      }
+//      currentTime = currentTime.plusMinutes(1);
+//      if (currentTime.getHour() >= 17) {
+//        currentTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).with(
+//                LocalTime.of(9, 0));
+//      }
+//    }
+//    return null;
+    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).with(LocalTime.of(9, 0));
+    LocalDateTime weekEndTime = currentTime.plusDays(6).with(LocalTime.of(17, 0)); // Includes Friday as the last working day
 
-    while (currentTime.isBefore(endTime)) {
-      if (currentTime.getHour() >= 9 && currentTime.getHour() < 17 && isTimeSlotAvailable(
-              currentUser, invitees, currentTime, duration)) {
+    while (currentTime.isBefore(weekEndTime)) {
+      if (currentTime.getHour() >= 9 && currentTime.getHour() < 17 && isTimeSlotAvailable(currentUser, invitees, currentTime, duration)) {
         return currentTime;
       }
       currentTime = currentTime.plusMinutes(1);
-      if (currentTime.getHour() >= 17) {
-        currentTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).with(
-                LocalTime.of(9, 0));
+      // Reset to next Monday at 9 AM if outside work hours
+      if (currentTime.getHour() >= 17 || currentTime.getDayOfWeek() == DayOfWeek.SUNDAY) {
+        currentTime = currentTime.plusDays(1).with(LocalTime.of(9, 0));
       }
     }
     return null;
@@ -65,21 +74,7 @@ public class WorkHoursStrategy implements SchedulingStrategy {
   // helper method for determining whether the provided time stamp is open
   private boolean isTimeSlotAvailable(String currentUser, String invitees,
                                       LocalDateTime startTime, int duration) {
-    List<String> allUsers = new ArrayList<>(Arrays.asList(invitees.split(", ")));
-    if (!allUsers.contains(currentUser)) {
-      allUsers.add(currentUser);
-    }
-    LocalDateTime endTime = startTime.plusMinutes(duration);
-    for (String user : allUsers) {
-      if (!model.getUserName().contains(user)) {
-        continue;
-      }
-      ScheduleModel userSchedule = model.getUserSchedule(user);
-      if (userSchedule != null && !userSchedule.isTimeSlotFree(startTime, endTime)) {
-        return false;
-      }
-    }
-    return true;
+    return timeSlotHelper(currentUser, invitees, startTime, duration);
   }
 }
 

@@ -1,6 +1,16 @@
 package cs3500.planner.view;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JComboBox;
+import javax.swing.JToggleButton;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JFileChooser;
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
 
 import java.awt.Rectangle;
 import java.awt.Point;
@@ -13,7 +23,9 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +49,7 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
   private boolean isHostColorOn;
   private String currentUser;
   private EventRenderer renderer;
-  private EventRenderer baseRenderer;
+  private JToggleButton toggleView;
 
   /**
    * Constructor for the CentralSystemFrame.
@@ -174,7 +186,6 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     });
     JMenuItem saveMenuItem = new JMenuItem("Save calendars");
     saveMenuItem.addActionListener(e -> controller.saveSchedules());
-
     fileMenu.add(loadMenuItem);
     fileMenu.add(saveMenuItem);
     menuBar.add(fileMenu);
@@ -192,6 +203,22 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
       renderer = new DefaultEventRenderer();
     }
     repaint();
+  }
+
+  private void updateRenderer() {
+    if (toggleView.isSelected()) {
+      if (isHostColorOn) {
+        renderer = new HostEventDecorator(new SaturdayEventRenderer(), currentUser);
+      } else {
+        renderer = new SaturdayEventRenderer();
+      }
+    } else {
+      if (isHostColorOn) {
+        renderer = new HostEventDecorator(new StandardEventRenderer(), currentUser);
+      } else {
+        renderer = new StandardEventRenderer();
+      }
+    }
   }
 
   //helper method to initialize the schedule panel
@@ -231,27 +258,35 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     eventRectangles.clear();
     int cellWidth = schedulePanel.getWidth() / 7;
     int cellHeight = schedulePanel.getHeight() / 24;
+    //define the current week range
+    LocalDateTime weekStart = LocalDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+    LocalDateTime weekEnd = weekStart.plusWeeks(1);
     for (EventModel event : events) {
       LocalDateTime startTime = event.getStartTime();
       LocalDateTime endTime = event.getEndTime();
-      int dayCol = (startTime.getDayOfWeek().getValue() == 7) ? 0 : startTime.getDayOfWeek().getValue();
-      int startHour = startTime.getHour();
-      int endHour = endTime.getHour();
-      long daySpan = java.time.temporal.ChronoUnit.DAYS.between(startTime.toLocalDate(), endTime.toLocalDate());
-      for (long day = 0; day <= daySpan; day++) {
-        int column = (dayCol + (int) day) % 7;
-        int startY = startHour * cellHeight;
-        int endY = (day < daySpan) ? 24 * cellHeight : endHour * cellHeight;
-        int rectHeight = endY - startY;
-        Rectangle eventRect = new Rectangle(column * cellWidth, startY, cellWidth, rectHeight);
+      //start and end times to the current week's bounds
+      LocalDateTime clippedStartTime = startTime.isBefore(weekStart) ? weekStart : startTime;
+      LocalDateTime clippedEndTime = endTime.isAfter(weekEnd) ? weekEnd : endTime;
+      // If the clipped times do not overlap the current week, skip rendering
+      if (clippedEndTime.isBefore(weekStart) || clippedStartTime.isAfter(weekEnd)) {
+        continue;
+      }
+      int startDayIndex = clippedStartTime.getDayOfWeek().getValue(); // Sunday is 0
+      int endDayIndex = clippedEndTime.getDayOfWeek().getValue(); // Sunday is 0
+      int startY = clippedStartTime.getHour() * cellHeight;
+      int endY = clippedEndTime.getHour() * cellHeight;
+      //loop through each day from startDayIndex to endDayIndex
+      for (int dayIndex = startDayIndex; dayIndex <= endDayIndex; dayIndex++) {
+        //calculate the start and end Y positions for the current day
+        int rectStartY = dayIndex == startDayIndex ? startY : 0;
+        int rectHeight = (dayIndex == endDayIndex ? endY : 24 * cellHeight) - rectStartY;
+        Rectangle eventRect = new Rectangle(dayIndex * cellWidth, rectStartY, cellWidth, rectHeight);
         eventRectangles.put(eventRect, event);
-        // Use renderer to draw the event
+        //render the event using the event renderer
         renderer.render(graphics, event, eventRect);
-        startHour = 0; // Reset startHour for multi-day events
       }
     }
   }
-
 
   //helper method to create the bottom panel and buttons
   private void initializeControlPanel() {
@@ -259,8 +294,7 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     JButton loadButton = new JButton("Create event");
     JButton scheduleButton = new JButton("Schedule event");
     JToggleButton toggleHostColorButton = new JToggleButton("Toggle Host Color");
-    JToggleButton toggleView = new JToggleButton("Toggle Week Start");
-
+    toggleView = new JToggleButton("Toggle Week Start");
     //dropdown for user selection
     userDropDown = new JComboBox<>();
     userDropDown.addItem("<none>");
@@ -275,31 +309,21 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
         repaint();
       }
     });
-
     //button actions
     loadButton.addActionListener(e -> controller.openEventFrame());
     scheduleButton.addActionListener(e -> controller.openScheduleFrame());
     toggleHostColorButton.addActionListener(e -> {
       isHostColorOn = !isHostColorOn;
-      if (isHostColorOn) {
-        toggleHostColorButton.setText("Host Color: On");
-      } else {
-        toggleHostColorButton.setText("Host Color: Off");
-      }
-      toggleHostColorMode();
+      updateRenderer();
       repaint();
     });
     toggleView.addActionListener(e -> {
-      //boolean wasHostColorOn = isHostColorOn;
       if (toggleView.isSelected()) {
-        switchToSaturdayView();
         toggleView.setText("Week starts on Saturday");
       } else {
-        switchToStandardView();
         toggleView.setText("Week starts on Sunday");
       }
-      //isHostColorOn = wasHostColorOn;
-      //toggleHostColorMode();
+      updateRenderer();
       repaint();
     });
     //adding components to the panel
@@ -308,11 +332,9 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     controlPanel.add(scheduleButton);
     controlPanel.add(toggleHostColorButton);
     controlPanel.add(toggleView);
-
     loadButton.setHorizontalAlignment(SwingConstants.CENTER);
     scheduleButton.setHorizontalAlignment(SwingConstants.CENTER);
     toggleHostColorButton.setHorizontalAlignment(SwingConstants.CENTER);
-
     //add the control panel to the frame
     this.add(controlPanel, BorderLayout.SOUTH);
   }
@@ -348,12 +370,12 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
   }
 
   private void switchToSaturdayView() {
-    this.renderer = new SaturdayEventRenderer();
+    updateRenderer();
     repaint();
   }
 
   private void switchToStandardView() {
-    this.renderer = new StandardEventRenderer();
+    updateRenderer();
     repaint();
   }
 }

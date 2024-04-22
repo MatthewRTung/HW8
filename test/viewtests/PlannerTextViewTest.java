@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.Event;
 import cs3500.planner.model.Schedule;
+import cs3500.planner.model.ScheduleModel;
 import cs3500.planner.view.PlannerTextView;
 
 import static org.junit.Assert.assertEquals;
@@ -89,8 +90,8 @@ public class PlannerTextViewTest {
   public void testToStringMultipleUsersVariousEvents() {
     centralSystem.addUser("user1");
     centralSystem.addUser("user2");
-    Schedule user1Schedule = centralSystem.getUserSchedule("user1");
-    Schedule user2Schedule = centralSystem.getUserSchedule("user2");
+    ScheduleModel user1Schedule = centralSystem.getUserSchedule("user1");
+    ScheduleModel user2Schedule = centralSystem.getUserSchedule("user2");
     user1Schedule.addEvent(new Event("User1 Event", "Location 1", false, LocalDateTime.now()
             , LocalDateTime.now().plusHours(1), false, "user1"));
     user2Schedule.addEvent(new Event("User2 Event", "Online", true, LocalDateTime.now()

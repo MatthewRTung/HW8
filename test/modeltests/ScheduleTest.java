@@ -11,6 +11,7 @@ import java.util.Map;
 import cs3500.planner.model.Event;
 import cs3500.planner.model.EventModel;
 import cs3500.planner.model.Schedule;
+import cs3500.planner.model.StandardSchedule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,7 +27,7 @@ public class ScheduleTest {
 
   @Before
   public void setUp() {
-    schedule = new Schedule();
+    schedule = new StandardSchedule();
     LocalDateTime now = LocalDateTime.now();
     event1 = new Event("Meeting", "Conference Room 101", false, now.minusHours(1),
             now.plusHours(1), false, "Host1");

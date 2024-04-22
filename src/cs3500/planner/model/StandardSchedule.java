@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class StandardSchedule extends AbstractSchedule {
+public class StandardSchedule extends Schedule {
 
   @Override
   public Map<DayOfWeek, List<EventModel>> getWeeklyEvents() {
