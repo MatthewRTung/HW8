@@ -11,7 +11,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 
-import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.CentralSystemModel;
 import cs3500.planner.model.Event;
 import cs3500.planner.model.EventModel;
@@ -36,15 +35,17 @@ public class ScheduleController implements IScheduleFeatures {
   private String currentUser;
   private EventFrame currentFrame;
   private SchedulingStrategy strategy;
-  private String schedulingStrategy;
 
 
   /**
    * Constructs a ScheduleController with the given view.
    * @param view the current CentralSystemFrame.
    */
-  public ScheduleController(CentralSystemFrame view) {
+  public ScheduleController(CentralSystemFrame view, ScheduleModel scheduleModel) {
     this.view = view;
+    if (scheduleModel == null) {
+      throw new IllegalStateException("Schedule model must not be null");
+    }
   }
 
   /**
@@ -70,7 +71,6 @@ public class ScheduleController implements IScheduleFeatures {
    * @param schedulingStrategy The scheduling strategy to be used ("anytime" or "workhours").
    */
   public void setDefaultSchedulingStrategy(String schedulingStrategy) {
-    this.schedulingStrategy = schedulingStrategy;
   }
 
   /**
@@ -209,7 +209,7 @@ public class ScheduleController implements IScheduleFeatures {
    * @param m The central system model to be used in the application.
    */
   @Override
-  public void launch(CentralSystem m) {
+  public void launch(CentralSystemModel m) {
     this.model = m;
     this.view.setController(this);
     this.view.finalizeInitialization();
@@ -226,7 +226,7 @@ public class ScheduleController implements IScheduleFeatures {
     if (currentFrame != null && currentFrame.isVisible()) {
       currentFrame.dispose();
     }
-    currentFrame = new EventFrame(); // HERE
+    currentFrame = new EventFrame();
     currentFrame.setEventDetails(event);
     currentFrame.setVisible(true);
     currentFrame.addWindowListener(new WindowAdapter() {
@@ -245,6 +245,9 @@ public class ScheduleController implements IScheduleFeatures {
   @Override
   public void addDropDown(JComboBox<String> dropDown) {
     for (String userName : model.getUserName()) {
+      if (userName == null) {
+        throw new IllegalStateException("You must specify a user name");
+      }
       dropDown.addItem(userName);
     }
   }

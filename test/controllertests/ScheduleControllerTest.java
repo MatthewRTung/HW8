@@ -10,6 +10,7 @@ import cs3500.planner.controller.ScheduleController;
 import cs3500.planner.model.CentralSystemStub;
 import cs3500.planner.model.Event;
 import cs3500.planner.model.EventStub;
+import cs3500.planner.model.ScheduleModel;
 import cs3500.planner.view.CentralSystemFrameStub;
 
 import static org.junit.Assert.assertFalse;
@@ -20,15 +21,17 @@ import static org.junit.Assert.fail;
  * Tests for the ScheduleController class.
  */
 public class ScheduleControllerTest {
+
   private ScheduleController controller;
   private CentralSystemFrameStub view;
   private CentralSystemStub model;
+  private ScheduleModel scheduleModel;
 
   @Before
   public void setUp() {
     model = new CentralSystemStub();
     view = new CentralSystemFrameStub(model);
-    controller = new ScheduleController(view);
+    controller = new ScheduleController(view, scheduleModel);
   }
 
   @Test

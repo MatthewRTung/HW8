@@ -1,15 +1,6 @@
 package cs3500.planner.view;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JFileChooser;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
 import java.awt.Rectangle;
 import java.awt.Point;
@@ -30,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import cs3500.planner.controller.IScheduleFeatures;
-import cs3500.planner.model.Event;
 import cs3500.planner.model.EventModel;
 
 /**
@@ -44,19 +34,26 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
   private final Map<Rectangle, EventModel> eventRectangles;
   private final Point dragStart;
   private final Point dragEnd;
+  private boolean isHostColorOn;
+  private String currentUser;
+  private EventRenderer renderer;
+  private EventRenderer baseRenderer;
 
   /**
    * Constructor for the CentralSystemFrame.
    */
   public CentralSystemFrame() {
     super("Planner Central System");
+    initializeRenderer();
     this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     this.setLayout(new BorderLayout());
     events = new ArrayList<>();
     eventRectangles = new HashMap<>();
     EventFrame currentFrame = null;
+    currentUser = null;
     dragStart = null;
     dragEnd = null;
+    isHostColorOn = false;
     setController(controller);
     initializeMenu();
     initializeSchedulePanel();
@@ -184,6 +181,19 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     this.setJMenuBar(menuBar);
   }
 
+  private void initializeRenderer() {
+    renderer = new DefaultEventRenderer();
+  }
+
+  private void toggleHostColorMode() {
+    if (isHostColorOn) {
+      renderer = new HostEventDecorator(new DefaultEventRenderer(), currentUser);
+    } else {
+      renderer = new DefaultEventRenderer();
+    }
+    repaint();
+  }
+
   //helper method to initialize the schedule panel
   private void initializeSchedulePanel() {
     schedulePanel = new JPanel() {
@@ -221,59 +231,92 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
     eventRectangles.clear();
     int cellWidth = schedulePanel.getWidth() / 7;
     int cellHeight = schedulePanel.getHeight() / 24;
-    graphics.setColor(Color.RED);
     for (EventModel event : events) {
       LocalDateTime startTime = event.getStartTime();
       LocalDateTime endTime = event.getEndTime();
-      int dayCol = (startTime.getDayOfWeek().getValue() == 7) ? 0 :
-              startTime.getDayOfWeek().getValue();
+      int dayCol = (startTime.getDayOfWeek().getValue() == 7) ? 0 : startTime.getDayOfWeek().getValue();
       int startHour = startTime.getHour();
       int endHour = endTime.getHour();
-      long daySpan = java.time.temporal.ChronoUnit.DAYS.between(
-              startTime.toLocalDate(), endTime.toLocalDate());
+      long daySpan = java.time.temporal.ChronoUnit.DAYS.between(startTime.toLocalDate(), endTime.toLocalDate());
       for (long day = 0; day <= daySpan; day++) {
         int column = (dayCol + (int) day) % 7;
         int startY = startHour * cellHeight;
         int endY = (day < daySpan) ? 24 * cellHeight : endHour * cellHeight;
         int rectHeight = endY - startY;
-        graphics.fillRect(column * cellWidth, startY, cellWidth, rectHeight);
         Rectangle eventRect = new Rectangle(column * cellWidth, startY, cellWidth, rectHeight);
         eventRectangles.put(eventRect, event);
-        startHour = 0;
+        // Use renderer to draw the event
+        renderer.render(graphics, event, eventRect);
+        startHour = 0; // Reset startHour for multi-day events
       }
     }
   }
+
 
   //helper method to create the bottom panel and buttons
   private void initializeControlPanel() {
     JPanel controlPanel = new JPanel(new GridLayout(1, 0, 5, 0));
     JButton loadButton = new JButton("Create event");
     JButton scheduleButton = new JButton("Schedule event");
-    //takes list of user-names to pick from
+    JToggleButton toggleHostColorButton = new JToggleButton("Toggle Host Color");
+    JToggleButton toggleView = new JToggleButton("Toggle Week Start");
+
+    //dropdown for user selection
     userDropDown = new JComboBox<>();
     userDropDown.addItem("<none>");
     controller.addDropDown(userDropDown);
-    //In CentralSystemFrame, where you initialize the JComboBox
     userDropDown.addActionListener(e -> {
       String selectedUser = (String) userDropDown.getSelectedItem();
       if (selectedUser != null && !"<none>".equals(selectedUser)) {
+        currentUser = selectedUser;  //updates the current user
         events.clear();
         events.addAll(controller.switchUser(selectedUser));
-        controller.setCurrentUser(selectedUser);
-        schedulePanel.repaint();
+        controller.setCurrentUser(selectedUser);  //tells the controller about the change
+        repaint();
       }
     });
-    loadButton.addActionListener(e -> {
-      controller.openEventFrame();
-    });
+
+    //button actions
+    loadButton.addActionListener(e -> controller.openEventFrame());
     scheduleButton.addActionListener(e -> controller.openScheduleFrame());
+    toggleHostColorButton.addActionListener(e -> {
+      isHostColorOn = !isHostColorOn;
+      if (isHostColorOn) {
+        toggleHostColorButton.setText("Host Color: On");
+      } else {
+        toggleHostColorButton.setText("Host Color: Off");
+      }
+      toggleHostColorMode();
+      repaint();
+    });
+    toggleView.addActionListener(e -> {
+      //boolean wasHostColorOn = isHostColorOn;
+      if (toggleView.isSelected()) {
+        switchToSaturdayView();
+        toggleView.setText("Week starts on Saturday");
+      } else {
+        switchToStandardView();
+        toggleView.setText("Week starts on Sunday");
+      }
+      //isHostColorOn = wasHostColorOn;
+      //toggleHostColorMode();
+      repaint();
+    });
+    //adding components to the panel
     controlPanel.add(userDropDown);
     controlPanel.add(loadButton);
     controlPanel.add(scheduleButton);
+    controlPanel.add(toggleHostColorButton);
+    controlPanel.add(toggleView);
+
     loadButton.setHorizontalAlignment(SwingConstants.CENTER);
     scheduleButton.setHorizontalAlignment(SwingConstants.CENTER);
+    toggleHostColorButton.setHorizontalAlignment(SwingConstants.CENTER);
+
+    //add the control panel to the frame
     this.add(controlPanel, BorderLayout.SOUTH);
   }
+
 
   //helper method that adds a mouse listener to the schedule panel. if a user clicks
   //on an event, it will open the event details window
@@ -302,5 +345,15 @@ public class CentralSystemFrame extends JFrame implements CentralSystemView {
       int height = Math.abs(dragStart.y - dragEnd.y);
       g.drawRect(x, y, width, height);
     }
+  }
+
+  private void switchToSaturdayView() {
+    this.renderer = new SaturdayEventRenderer();
+    repaint();
+  }
+
+  private void switchToStandardView() {
+    this.renderer = new StandardEventRenderer();
+    repaint();
   }
 }

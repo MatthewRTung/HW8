@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.JComboBox;
 
 import cs3500.planner.model.CentralSystem;
+import cs3500.planner.model.CentralSystemModel;
 import cs3500.planner.model.EventModel;
 
 /**
@@ -67,9 +68,9 @@ public interface IScheduleFeatures {
   /**
    * Launches the application with a given central system model.
    *
-   * @param m The central system model to be used in the application.
+   @param m The central system model to be used in the application.
    */
-  void launch(CentralSystem m);
+  void launch(CentralSystemModel m);
 
   /**
    * Opens the event details frame for a specific event.

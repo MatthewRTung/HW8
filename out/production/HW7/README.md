@@ -78,4 +78,11 @@ What works and doesn't work:
 - Given that the code we were provided had a lot of issues and didn't work correctly (given that it was 
 tightly coupled), there wasn't much we could do. Our implementation doesn't work.
 
+Extra Credit:
 
+Level 0:
+
+Level 1:
+We created an abstract class for two subclasses that handle the saturday and standard schedules. This allows us to keep
+the functionality of the old code starting on Sunday but also allowing us to use command line args to start the planner 
+on Saturday.

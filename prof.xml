@@ -13,8 +13,8 @@
 			<place>"Churchill Hall 101"</place>
 		</location>
 		<users>
-			<uid>"Prof. Lucia"</uid>
 			<uid>"Student Anon"</uid>
+			<uid>"Prof. Lucia"</uid>
 			<uid>"Chat"</uid>
 		</users>
 	</event>

@@ -5,9 +5,11 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 
+import cs3500.planner.model.CentralSystemModel;
 import cs3500.planner.model.CentralSystemStub;
 import cs3500.planner.model.Event;
 import cs3500.planner.controller.ScheduleController;
+import cs3500.planner.model.ScheduleModel;
 import cs3500.planner.view.CentralSystemFrameStub;
 
 import static org.junit.Assert.assertFalse;
@@ -22,13 +24,15 @@ public class ScheduleEventWithStrategyTest {
   private ScheduleController controller;
   private CentralSystemStub model;
   private CentralSystemFrameStub view;
+  private ScheduleModel scheduleModel;
+  private CentralSystemModel centralSystemModel;
 
   @Before
   public void setup() {
     model = new CentralSystemStub();
     view = new CentralSystemFrameStub(model);
-    controller = new ScheduleController(view);
-    controller.launch(model);
+    controller = new ScheduleController(view, scheduleModel);
+    controller.launch(centralSystemModel);
   }
 
   @Test
@@ -45,7 +49,7 @@ public class ScheduleEventWithStrategyTest {
   public void testAnyTimeStrategyWithNoAvailableSlot() {
     model.addUser("user1");
     controller.setCurrentUser("user1");
-    // Assuming there's no slot available in the stub implementation for this test
+    //Assuming there's no slot available in the stub implementation for this test
     controller.scheduleEventWithStrategy("Meeting", "Office", false, 30,
             "user1", "", "Any time");
     assertFalse(view.isViewUpdated());

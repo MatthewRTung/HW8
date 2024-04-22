@@ -105,11 +105,6 @@ public class Event implements EventModel, Comparable<EventModel> {
     }
   }
 
-  @Override
-  public String getHostID() {
-    return "";
-  }
-
   /**
    * Gets the name of the event.
    * @return the name of the event.
