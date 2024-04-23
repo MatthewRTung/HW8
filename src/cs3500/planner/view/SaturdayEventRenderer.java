@@ -1,9 +1,14 @@
 package cs3500.planner.view;
 
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Color;
 
 import cs3500.planner.model.EventModel;
 
+/**
+ * SaturdayEventRenderer to help render schedule starting on saturday.
+ */
 public class SaturdayEventRenderer implements EventRenderer {
   @Override
   public void render(Graphics g, EventModel event, Rectangle rect) {

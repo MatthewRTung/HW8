@@ -18,8 +18,9 @@ public class PlannerRunner {
    */
   public static void main(String[] args) {
     if (args.length != 2) {
-      System.err.println("Error: Expected two arguments for scheduling strategy" +
-              " (\"anytime\" or \"workhours\") and schedule type (\"standard\" or \"saturday\").");
+      System.err.println("Usage: java PlannerRunner <strategy> <scheduleType>\n" +
+              "strategy: \"anytime\" | \"workhours\"\n" +
+              "scheduleType: \"standard\" | \"saturday\"");
       System.exit(1);
     }
     String strategy = args[0];
@@ -40,6 +41,7 @@ public class PlannerRunner {
     CentralSystemFrame frame = new CentralSystemFrame();
     ScheduleController controller = new ScheduleController(frame, scheduleModel);
     frame.setController(controller);
+    frame.setInitialRender(scheduleType);
     controller.setDefaultSchedulingStrategy(strategy);
     controller.launch(centralSystemModel);
     frame.setVisible(true);

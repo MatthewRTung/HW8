@@ -7,7 +7,7 @@ package cs3500.planner.provider.model;
 public interface IUser {
   /**
    * adds the given event to a user's schedule, protected so that it can act as a helper
-   * to the XMLEditor
+   * to the XMLEditor.
    * @param e the event to add.
    */
 

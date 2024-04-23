@@ -6,7 +6,11 @@ import java.awt.Rectangle;
 import java.awt.Graphics;
 import java.awt.Color;
 
+/**
+ * DefaultEventRenderer class that helps draw the events.
+ */
 public class DefaultEventRenderer implements EventRenderer {
+
   @Override
   public void render(Graphics g, EventModel event, Rectangle rect) {
     Color transparent = new Color(177, 60, 60, 128);

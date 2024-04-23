@@ -72,6 +72,7 @@ public class ScheduleController implements IScheduleFeatures {
    * @param schedulingStrategy The scheduling strategy to be used ("anytime" or "workhours").
    */
   public void setDefaultSchedulingStrategy(String schedulingStrategy) {
+    //Does not need to be implemented since we have a helper method
   }
 
   /**
@@ -263,16 +264,6 @@ public class ScheduleController implements IScheduleFeatures {
     scheduleFrame.setVisible(true);
   }
 
-  public void setStrategy(String strategyName) {
-    if ("Any time".equals(strategyName) || "anytime".equals(strategyName)) {
-      this.strategy = new AnyTimeStrategy(model);
-    } else if ("Work hours".equals(strategyName) || "workhours".equals(strategyName)) {
-      this.strategy = new WorkHoursStrategy(model, DayOfWeek.MONDAY);
-    } else {
-      throw new IllegalArgumentException("Invalid strategy name");
-    }
-  }
-
   /**
    * Schedules an event with a specified strategy.
    *
@@ -311,6 +302,17 @@ public class ScheduleController implements IScheduleFeatures {
             " already exists. Do you want to overwrite it?",
             "Confirm Overwrite", JOptionPane.YES_NO_OPTION);
     return dialogResult == JOptionPane.YES_OPTION;
+  }
+
+  //helper method to set the specific strategy used
+  private void setStrategy(String strategyName) {
+    if ("Any time".equals(strategyName) || "anytime".equals(strategyName)) {
+      this.strategy = new AnyTimeStrategy(this.model);
+    } else if ("Work hours".equals(strategyName) || "workhours".equals(strategyName)) {
+      this.strategy = new WorkHoursStrategy(this.model, DayOfWeek.MONDAY);
+    } else {
+      throw new IllegalArgumentException("Invalid strategy name");
+    }
   }
 }
 

@@ -10,8 +10,8 @@ import java.util.Map;
  * CentralSystemStub is a stub implementation of the CentralSystem interface used for testing.
  */
 public class CentralSystemStub extends CentralSystem {
-  private List<String> users = new ArrayList<>();
-  private Map<String, List<Event>> eventsByUser = new HashMap<>();
+  private final List<String> users = new ArrayList<>();
+  private final Map<String, List<Event>> eventsByUser = new HashMap<>();
   private boolean loadSuccess;
 
   /**

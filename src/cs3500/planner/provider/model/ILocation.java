@@ -1,5 +1,8 @@
 package cs3500.planner.provider.model;
 
+/**
+ * Interface for ILocation.
+ */
 public interface ILocation {
 
   /**

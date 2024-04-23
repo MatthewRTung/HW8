@@ -15,9 +15,9 @@ import cs3500.planner.provider.model.IUser;
  * with the planning system by implementing the IEvent interface.
  */
 public class EventAdapter implements IEvent {
-  private EventModel event;
-  private IUser creator;
-  private ArrayList<IUser> inviteeUsers;
+  private final EventModel event;
+  private final IUser creator;
+  private final ArrayList<IUser> inviteeUsers;
 
   /**
    * Constructs an EventAdapter with the given EventModel, creator, and invitee users.

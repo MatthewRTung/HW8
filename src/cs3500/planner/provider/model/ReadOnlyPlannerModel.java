@@ -13,7 +13,7 @@ public interface ReadOnlyPlannerModel {
   List<IUser> getClients();
 
   /**
-   * Returns the real model;
+   * Returns the real model.
    * @return PlannerModel
    */
   PlannerModel getModel();

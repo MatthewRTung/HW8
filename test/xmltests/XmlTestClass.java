@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
  * Test class for methods in XMLProcessor.
  */
 
-public class xmlTestClass {
+public class XmlTestClass {
 
   @Test
   public void testReadXMLFile_EmptyFile() {

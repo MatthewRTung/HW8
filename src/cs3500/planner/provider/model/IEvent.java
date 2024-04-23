@@ -59,7 +59,7 @@ public interface IEvent {
   /**
    * gets the duration, in minutes, of an event.
    * @return the duration of an event, as a list of minutes in regards to the entire week,
-   * of the event.
+   *         of the event.
    */
   List<Integer> getDuration();
 }

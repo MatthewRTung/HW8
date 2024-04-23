@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 
 import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.Event;
-import cs3500.planner.model.Schedule;
 import cs3500.planner.model.ScheduleModel;
 import cs3500.planner.view.PlannerTextView;
 

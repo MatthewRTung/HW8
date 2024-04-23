@@ -83,5 +83,15 @@ Extra Credit:
 Level 0:
 
 Level 1:
-For this level we decided to create two class. SaturdayEventRenderer and StandardEventRenderer. I noticed that there was a lot of code that
-could be reused since both classes had the same functionality but were just slightly different in the way they determined
+For this level we decided to create two class. SaturdayEventRenderer and StandardEventRenderer. We noticed that there was a lot of code that
+could be reused since both classes had the same functionality but were just slightly different in the way they determined. So we made
+Schedule an abstract class and had the two SaturdaySchedule and StandardSchedule extend the Schedule class.
+
+Level 2:
+For this level we decided to create some new classes to help us create the new planner where the starting day is saturday.
+We created some new classes to help us render the events that we wanted to add. We made one for the Saturday and one for Sunday.
+The SaturdayEventRenderer class changes the way events are laid out on the grid where StandardEventRenderer keeps the functionality
+of the old code.
+
+Level 3:
+For this level we only had to make minor adjustments to our strategy based on the starting das as Saturday.

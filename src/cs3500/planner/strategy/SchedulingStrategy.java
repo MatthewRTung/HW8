@@ -11,14 +11,15 @@ import java.time.LocalDateTime;
  * specific constraints like work hours.
  */
 public interface SchedulingStrategy {
-    /**
-     * Determines the next available time slot for scheduling an event given the user, their
-     * invitees, and the event's duration.
-     * @param user The user ID of the event organizer.
-     * @param invitees A comma-separated list of invitee IDs for the event.
-     * @param duration The duration of the event in minutes.
-     * @return A {@code LocalDateTime} representing the start time of the next available time slot,
-     *         or {@code null} if no suitable time slot is found.
-     */
-    LocalDateTime findStartTime(String user, String invitees, int duration);
+  /**
+   * Determines the next available time slot for scheduling an event given the user, their
+   * invitees, and the event's duration.
+   *
+   * @param user The user ID of the event organizer.
+   * @param invitees A comma-separated list of invitee IDs for the event.
+   * @param duration The duration of the event in minutes.
+   * @return A {@code LocalDateTime} representing the start time of the next available time slot,
+   *         or {@code null} if no suitable time slot is found.
+   */
+  LocalDateTime findStartTime(String user, String invitees, int duration);
 }

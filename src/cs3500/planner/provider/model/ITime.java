@@ -1,5 +1,8 @@
 package cs3500.planner.provider.model;
 
+/**
+ * Interface for Time.
+ */
 public interface ITime {
   /**
    * gets the hours of the time (00-23).
@@ -9,7 +12,7 @@ public interface ITime {
 
 
   /**
-   * gets the minutes of the time
+   * gets the minutes of the time.
    * @return int (00-59)
    */
   int getMinutes();

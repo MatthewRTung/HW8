@@ -27,9 +27,9 @@ public class WorkHoursStrategy extends SchedulingStrategyBase {
 
   /**
    * Finds the earliest available start time within the standard work hours from Monday to Friday,
-   * where all specified users, including the current user, can participate for the specified duration.
-   * If a time slot is not available within the current week's work hours, it continues searching
-   * from the next Monday.
+   * where all specified users, including the current user, can participate for the specified
+   * duration. If a time slot is not available within the current week's work hours, it continues
+   * searching from the next Monday.
    *
    * @param currentUser the name of the current user
    * @param invitees    a comma-separated string of names of users to include in the scheduling
@@ -39,35 +39,27 @@ public class WorkHoursStrategy extends SchedulingStrategyBase {
    */
   @Override
   public LocalDateTime findStartTime(String currentUser, String invitees, int duration) {
-//    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(
-//            DayOfWeek.MONDAY)).with(LocalTime.of(9, 0));
-//    LocalDateTime endTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.SATURDAY));
-//
-//    while (currentTime.isBefore(endTime)) {
-//      if (currentTime.getHour() >= 9 && currentTime.getHour() < 17 && isTimeSlotAvailable(
-//              currentUser, invitees, currentTime, duration)) {
-//        return currentTime;
-//      }
-//      currentTime = currentTime.plusMinutes(1);
-//      if (currentTime.getHour() >= 17) {
-//        currentTime = currentTime.with(TemporalAdjusters.next(DayOfWeek.MONDAY)).with(
-//                LocalTime.of(9, 0));
-//      }
-//    }
-//    return null;
-    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).with(LocalTime.of(9, 0));
-    LocalDateTime weekEndTime = currentTime.plusDays(6).with(LocalTime.of(17, 0)); // Includes Friday as the last working day
-
+    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(
+            DayOfWeek.MONDAY)).with(LocalTime.of(9, 0));
+    //end of week
+    LocalDateTime weekEndTime = currentTime.plusDays(4).with(LocalTime.of(17, 0));
+    //loop over work hours
     while (currentTime.isBefore(weekEndTime)) {
-      if (currentTime.getHour() >= 9 && currentTime.getHour() < 17 && isTimeSlotAvailable(currentUser, invitees, currentTime, duration)) {
-        return currentTime;
+      //checks within work hours
+      if (currentTime.getHour() >= 9 && currentTime.getHour() < 17) {
+        //checks if timeslot is available
+        if (isTimeSlotAvailable(currentUser, invitees, currentTime, duration)) {
+          return currentTime;
+        }
       }
+      //next min
       currentTime = currentTime.plusMinutes(1);
-      // Reset to next Monday at 9 AM if outside work hours
-      if (currentTime.getHour() >= 17 || currentTime.getDayOfWeek() == DayOfWeek.SUNDAY) {
+      //reset to next day at 9:00 am if after work hours or weekend
+      if (currentTime.getHour() >= 17 || currentTime.getDayOfWeek() == DayOfWeek.SATURDAY) {
         currentTime = currentTime.plusDays(1).with(LocalTime.of(9, 0));
       }
     }
+    //no time found in current week
     return null;
   }
 

@@ -263,10 +263,10 @@ public class EventFrame extends JFrame implements EventView {
     this.add(createButton, constraints);
   }
 
-  // 1. Add a method to set the current event
+  //method to set the current event
   public void setCurrentEvent(Event event) {
     this.currentEvent = event;
-    setEventDetails(event); // Populate the frame with the event details
+    setEventDetails(event);
   }
 
   // helper method for creating an event

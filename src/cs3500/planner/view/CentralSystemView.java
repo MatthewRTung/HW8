@@ -48,4 +48,10 @@ public interface CentralSystemView {
    * @param controller The controller to set for this view.
    */
   void setController(IScheduleFeatures controller);
+
+  /**
+   * Helps set the type of view to use.
+   * @param scheduleType the schedule type being used.
+   */
+  void setInitialRender(String scheduleType);
 }

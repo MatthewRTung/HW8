@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Schedule class that represents a schedule of events for a single user.
+ * Abstract Schedule class that represents a schedule of events for a single user.
  */
 public abstract class Schedule implements ScheduleModel {
   //list of all events in the user's schedule
@@ -129,7 +129,6 @@ public abstract class Schedule implements ScheduleModel {
    *
    * @return A map where each key is a DayOfWeek and each value is a list of events for that day.
    */
-
   @Override
   public abstract Map<DayOfWeek, List<EventModel>> getWeeklyEvents();
 

@@ -9,7 +9,6 @@ import javax.swing.JFrame;
 import cs3500.planner.model.CentralSystem;
 import cs3500.planner.model.Event;
 import cs3500.planner.model.EventModel;
-import cs3500.planner.model.Schedule;
 import cs3500.planner.model.ScheduleModel;
 
 /**

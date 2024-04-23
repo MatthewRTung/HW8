@@ -36,19 +36,9 @@ public class AnyTimeStrategy extends SchedulingStrategyBase {
    */
   @Override
   public LocalDateTime findStartTime(String currentUser, String invitees, int duration) {
-//    LocalDateTime currentTime = LocalDateTime.now().with(DayOfWeek.SUNDAY).with(LocalTime.MIN);
-//    LocalDateTime endTime = currentTime.plusWeeks(1);
-//
-//    while (currentTime.isBefore(endTime)) {
-//      if (isTimeSlotAvailable(currentUser, invitees, currentTime, duration)) {
-//        return currentTime;
-//      }
-//      currentTime = currentTime.plusMinutes(1);
-//    }
-//    return null;
-    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY)).with(LocalTime.MIN);
+    LocalDateTime currentTime = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(
+            DayOfWeek.SATURDAY)).with(LocalTime.MIN);
     LocalDateTime endTime = currentTime.plusWeeks(1);
-
     while (currentTime.isBefore(endTime)) {
       if (isTimeSlotAvailable(currentUser, invitees, currentTime, duration)) {
         return currentTime;

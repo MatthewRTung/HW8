@@ -107,7 +107,7 @@ public class XMLConfigurator implements XMLProcessor {
     String name = getTextContent(eElement, "name").replace("\"", "");
     String location = getTextContent(eElement, "place").replace("\"", "");
     NodeList users = eElement.getElementsByTagName("uid");
-    String hostId = users.getLength() > 0 ? users.item(0).getTextContent().replace("\"", "") : ""; // Assume first user is the host
+    String hostId = users.getLength() > 0 ? users.item(0).getTextContent().replace("\"", "") : "";
     boolean isOnline = Boolean.parseBoolean(getTextContent(eElement, "online"));
     LocalDateTime startDateTime = parseDateTime(eElement, "start-day", "start", referenceDate);
     LocalDateTime endDateTime = parseDateTime(eElement, "end-day", "end", referenceDate);

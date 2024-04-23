@@ -20,8 +20,8 @@ public interface IFeatures {
    * @param duration the duration of the event.
    * @param invitees the invitees of the event.
    */
-  void scheduleStrat(String eventName, IUser host, String locString, boolean isOnline, String duration,
-                     ArrayList<IUser> invitees);
+  void scheduleStrat(String eventName, IUser host, String locString, boolean isOnline,
+                     String duration, ArrayList<IUser> invitees);
 
   /**
    * Creates an Event in the Planner. Does not add the event if there is an overlapping event.

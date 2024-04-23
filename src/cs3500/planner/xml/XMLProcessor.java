@@ -2,7 +2,6 @@ package cs3500.planner.xml;
 
 import java.util.List;
 
-import cs3500.planner.model.Event;
 import cs3500.planner.model.EventModel;
 
 /**

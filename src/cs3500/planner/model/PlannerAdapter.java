@@ -17,7 +17,7 @@ import cs3500.planner.provider.model.IUser;
  */
 public class PlannerAdapter implements INUPlanner {
 
-  private CentralSystemModel centralSystem;
+  private final CentralSystemModel centralSystem;
 
   /**
    * Constructs a PlannerAdapter with the given CentralSystem object to adapt.
